@@ -1,1634 +1,1683 @@
-<!DOCTYPE html >
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LP Engine v3.2 — EduWonderLab</title>
+<title>EduWonderLab · Notebook Engine v6.0</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 <style>
-:root{--navy:#1C2E42;--teal:#387F84;--cream:#F7F4EE;--body:#242A30;--muted:#5C656E;--border:#D6DBDF;--card:#FFFFFF;--card-blue:#EAF2F7;--success:#2d9b6f;--error:#C0614A;--warn:#b87d2a;--gold:#DCB15B;--shadow-sm:0 1px 4px rgba(28,46,66,.06);--shadow-md:0 4px 20px rgba(28,46,66,.10);--shadow-lg:0 12px 40px rgba(28,46,66,.15);--r:10px;--r-sm:6px;--r-lg:16px}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--cream);color:var(--body);min-height:100vh;display:flex;flex-direction:column;line-height:1.55}
-header{position:sticky;top:0;z-index:200;background:var(--navy);color:#fff;padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--teal)}
-.logo{display:flex;align-items:center;gap:11px}
-.logo-mark{width:32px;height:32px;background:var(--teal);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
-.logo-name{font-family:Georgia,serif;font-size:15px;font-weight:600;color:#fff}
-.logo-sub{font-size:10.5px;color:rgba(255,255,255,.45);margin-top:1px}
-.header-right{display:flex;align-items:center;gap:10px}
-.badge{font-family:monospace;font-size:10.5px;color:var(--teal);background:rgba(56,127,132,.15);border:1px solid rgba(56,127,132,.35);padding:3px 9px;border-radius:4px}
-.status-dot{width:7px;height:7px;border-radius:50%;background:#3fb950}
-main{flex:1;max-width:860px;width:100%;margin:0 auto;padding:36px 24px 60px}
-.page-eyebrow{font-family:monospace;font-size:11px;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
-.page-title{font-family:Georgia,serif;font-size:32px;font-weight:700;color:var(--navy);line-height:1.15;margin-bottom:6px}
-.page-sub{font-size:13.5px;color:var(--muted);margin-bottom:36px;max-width:540px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:26px;margin-bottom:18px;box-shadow:var(--shadow-sm)}
-.card-header{display:flex;align-items:flex-start;gap:13px;margin-bottom:20px}
-.step-badge{min-width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:12px;font-weight:600;background:var(--navy);color:#fff;flex-shrink:0}
-.step-badge.done{background:var(--success)}
-.card-title{font-size:15px;font-weight:600;color:var(--navy);line-height:1.3}
-.card-hint{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
-
-/* ── UPLOAD ZONE (rebuilt) ── */
-.upload-zone{border:2px dashed var(--border);border-radius:var(--r);padding:32px 20px;text-align:center;background:var(--cream);transition:border-color .2s,background .2s;position:relative}
-.upload-zone.drag-over{border-color:var(--teal);background:#EAF5F6}
-.upload-zone.has-file{border-color:var(--success);background:#edf7f3;border-style:solid}
-.upload-icon{font-size:36px;margin-bottom:10px;display:block;pointer-events:none}
-.upload-text{font-size:14px;color:var(--muted);margin-bottom:14px;pointer-events:none}
-.upload-text strong{color:var(--teal)}
-.upload-meta{font-size:11.5px;color:var(--muted);opacity:.7;pointer-events:none}
-/* The actual file input — hidden but full-zone clickable via JS, not CSS overlay */
-#file-input{display:none}
-/* Visible click-to-browse button */
-.browse-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;transition:background .15s}
-.browse-btn:hover{background:#263f59}
-.browse-btn:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
-.file-pill{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;font-weight:500;color:var(--success);background:rgba(45,155,111,.08);border:1px solid rgba(45,155,111,.25);padding:8px 14px;border-radius:30px;margin-top:4px}
-.file-remove-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;padding:0 2px;line-height:1;border-radius:3px;transition:color .15s}
-.file-remove-btn:hover{color:var(--error)}
-
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-label.field-label{font-family:monospace;font-size:10.5px;font-weight:500;color:var(--navy);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:6px}
-input[type=text],input[type=password],input[type=date]{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:14px;color:var(--body);background:#fff;transition:border-color .2s,box-shadow .2s;outline:none;appearance:none}
-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(56,127,132,.1)}
-input.err-field{border-color:var(--error)}
-.field-err{font-size:11.5px;color:var(--error);margin-top:4px;display:none}
-.field-err.show{display:block}
-.api-wrap{position:relative}
-.api-wrap input{padding-right:76px;font-family:monospace;font-size:12.5px}
-.toggle-vis-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:1px solid var(--border);border-radius:4px;font-size:10.5px;color:var(--muted);cursor:pointer;padding:3px 8px;transition:border-color .15s,color .15s}
-.toggle-vis-btn:hover{border-color:var(--teal);color:var(--teal)}
-.key-persist-row{display:flex;align-items:center;gap:8px;margin-top:9px}
-.key-persist-row input[type=checkbox]{width:14px;height:14px;accent-color:var(--teal);flex-shrink:0;cursor:pointer}
-.key-persist-label{font-size:11.5px;color:var(--muted);cursor:pointer;user-select:none}
-.radio-group{display:flex;gap:10px}
-.radio-pill{flex:1;border:1.5px solid var(--border);border-radius:var(--r);padding:13px;cursor:pointer;transition:border-color .15s,background .15s;position:relative;user-select:none}
-.radio-pill:hover{border-color:var(--teal)}
-.radio-pill.sel{border-color:var(--teal);background:#EAF5F6}
-.radio-pill input{position:absolute;opacity:0;pointer-events:none;width:0;height:0}
-.rp-label{font-size:13px;font-weight:600;color:var(--navy)}
-.rp-desc{font-size:11px;color:var(--muted);margin-top:3px}
-#review-section{display:none}
-.review-card{background:#fff;border:2px solid var(--gold);border-radius:var(--r-lg);padding:26px;margin-bottom:18px}
-.review-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.review-icon{font-size:24px}
-.review-title{font-family:Georgia,serif;font-size:17px;font-weight:700;color:var(--navy)}
-.review-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
-.review-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.review-field{display:flex;flex-direction:column;gap:4px}
-.review-field-label{font-family:monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-.review-field input{padding:7px 10px;font-size:13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;outline:none;width:100%;transition:border-color .2s}
-.review-field input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(56,127,132,.1)}
-.quality-gate{padding:11px 14px;border-radius:var(--r-sm);font-size:12.5px;margin-bottom:14px;display:flex;align-items:flex-start;gap:8px}
-.quality-gate.gate-block{background:#fdf2f0;border:1px solid rgba(192,97,74,.3);color:var(--error)}
-.quality-gate.gate-warn{background:#fffbeb;border:1px solid rgba(184,125,42,.3);color:var(--warn)}
-.quality-gate.gate-ok{background:#f0fdf4;border:1px solid rgba(45,155,111,.3);color:var(--success)}
-.review-actions{display:flex;gap:10px;margin-top:4px}
-.btn-confirm{padding:11px 24px;background:var(--teal);color:#fff;border:none;border-radius:var(--r-sm);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s}
-.btn-confirm:disabled{opacity:.5;cursor:not-allowed}
-.btn-confirm:hover:not(:disabled){background:#2d7278}
-.btn-back{padding:11px 20px;background:none;color:var(--muted);border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:14px;cursor:pointer;transition:border-color .15s,color .15s}
-.btn-back:hover{border-color:var(--navy);color:var(--navy)}
-.gen-btn{width:100%;padding:17px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-family:Georgia,serif;font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;transition:background .2s,transform .15s,box-shadow .2s}
-.gen-btn:hover:not(:disabled){background:#263f59;transform:translateY(-1px);box-shadow:var(--shadow-lg)}
-.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.gen-btn:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
-.info-box{background:var(--card-blue);border:1px solid #b8d4e3;border-radius:var(--r-sm);padding:12px 15px;font-size:12px;color:var(--navy);line-height:1.65;margin-top:12px}
-.info-box strong{color:var(--teal)}
-#progress-section{display:none}
-.progress-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:26px;margin-bottom:18px;box-shadow:var(--shadow-sm)}
-.progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-.progress-heading{font-family:Georgia,serif;font-size:17px;font-weight:600;color:var(--navy)}
-.progress-pct{font-family:monospace;font-size:12px;color:var(--teal)}
-.prog-bar-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:22px}
-.prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),#4fa8b0);border-radius:3px;transition:width .5s ease;width:0%}
-.stage-list{display:flex;flex-direction:column}
-.stage-row{display:flex;align-items:center;gap:13px;padding:10px 0;border-bottom:1px solid var(--border)}
-.stage-row:last-child{border-bottom:none}
-.s-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;font-family:monospace;transition:all .25s}
-.s-icon.wait{background:#f0f2f4;color:var(--muted)}
-@media(prefers-reduced-motion:no-preference){.s-icon.run{animation:spin-icon 1.2s linear infinite}}
-.s-icon.run{background:rgba(56,127,132,.15);color:var(--teal)}
-@keyframes spin-icon{to{transform:rotate(360deg)}}
-.s-icon.ok{background:rgba(45,155,111,.12);color:var(--success)}
-.s-icon.fail{background:rgba(192,97,74,.12);color:var(--error)}
-.s-name{flex:1;font-size:13.5px;color:var(--body)}
-.s-name.dim{color:var(--muted)}
-.s-detail{font-family:monospace;font-size:10.5px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cancel-wrap{margin-top:14px;text-align:right}
-.cancel-btn{padding:7px 16px;background:none;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:12.5px;color:var(--muted);cursor:pointer;transition:border-color .15s,color .15s}
-.cancel-btn:hover{border-color:var(--error);color:var(--error)}
-.log-terminal{margin-top:16px;background:#0d1117;border-radius:8px;overflow:hidden}
-.log-titlebar{background:#161b22;padding:8px 12px;display:flex;align-items:center;gap:6px}
-.log-dot{width:10px;height:10px;border-radius:50%}
-.log-inner{padding:12px 14px;max-height:190px;overflow-y:auto;scroll-behavior:smooth}
-.log-line{font-family:monospace;font-size:10.5px;line-height:1.8;color:#8b949e;display:flex;gap:8px}
-.log-ts{opacity:.45;flex-shrink:0}
-.log-msg{word-break:break-word}
-.log-line.info .log-msg{color:#58a6ff}
-.log-line.ok .log-msg{color:#3fb950}
-.log-line.warn .log-msg{color:#d29922}
-.log-line.err .log-msg{color:#f85149}
-#error-section{display:none;background:#fdf2f0;border:1.5px solid #e5b8b0;border-radius:var(--r-lg);padding:22px;margin-bottom:18px}
-.err-title{font-family:Georgia,serif;font-weight:700;font-size:16px;color:var(--error);margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.err-msg{font-size:13.5px;color:var(--body);line-height:1.65;margin-bottom:6px}
-.err-detail-wrap{margin-bottom:14px}
-.err-detail-toggle{font-size:11.5px;color:var(--muted);cursor:pointer;background:none;border:none;padding:0;text-decoration:underline dotted}
-.err-detail{font-family:monospace;font-size:10.5px;color:var(--muted);background:#f5eeec;border:1px solid rgba(192,97,74,.15);border-radius:4px;padding:8px 10px;margin-top:6px;white-space:pre-wrap;word-break:break-word;display:none;max-height:120px;overflow-y:auto}
-.err-detail.show{display:block}
-.err-actions{display:flex;gap:10px}
-.btn-retry{padding:9px 18px;background:var(--error);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s}
-.btn-retry:hover{opacity:.88}
-.btn-secondary{padding:9px 18px;background:none;color:var(--muted);border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;cursor:pointer;transition:border-color .15s,color .15s}
-.btn-secondary:hover{border-color:var(--navy);color:var(--navy)}
-#results-section{display:none}
-.results-card{background:#fff;border:2px solid var(--success);border-radius:var(--r-lg);padding:26px;margin-bottom:18px;box-shadow:var(--shadow-md)}
-.results-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
-.results-icon-wrap{width:46px;height:46px;background:rgba(45,155,111,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.results-title{font-family:Georgia,serif;font-size:18px;font-weight:700;color:var(--navy)}
-.results-meta{font-size:12px;color:var(--muted);margin-top:3px}
-.qa-banner{padding:11px 14px;border-radius:var(--r-sm);font-size:12.5px;margin-bottom:18px;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
-.qa-banner.pass{background:#f0fdf4;border:1px solid rgba(45,155,111,.3);color:var(--success)}
-.qa-banner.warn{background:#fffbeb;border:1px solid rgba(184,125,42,.3);color:var(--warn)}
-.qa-banner.fail{background:#fdf2f0;border:1px solid rgba(192,97,74,.3);color:var(--error)}
-.qa-warn-list{margin-top:6px;padding-left:14px}
-.qa-warn-list li{font-size:11.5px;line-height:1.6}
-.dl-list{display:flex;flex-direction:column;gap:10px}
-.dl-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--cream);border:1.5px solid var(--border);border-radius:var(--r)}
-.dl-left{display:flex;align-items:center;gap:12px}
-.dl-file-icon{font-size:24px;line-height:1}
-.dl-name{font-size:14px;font-weight:600;color:var(--body)}
-.dl-filename{font-family:monospace;font-size:10.5px;color:var(--muted);margin-top:2px}
-.dl-btn{padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .15s;display:inline-flex;align-items:center;gap:6px}
-.dl-btn:hover{background:#263f59}
-.btn-reset{width:100%;padding:12px;background:none;border:1.5px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--muted);cursor:pointer;margin-top:6px;transition:border-color .15s,color .15s}
-.btn-reset:hover{border-color:var(--navy);color:var(--navy)}
-footer{text-align:center;padding:16px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);font-family:monospace;letter-spacing:.04em}
-@media(max-width:560px){main{padding:24px 14px 48px}.field-row{grid-template-columns:1fr}.radio-group{flex-direction:column}.dl-item{flex-direction:column;align-items:flex-start;gap:10px}.dl-btn{width:100%;justify-content:center}.err-actions{flex-direction:column}.review-grid{grid-template-columns:1fr}.review-actions{flex-direction:column}}
+  :root {
+    --navy: #1C2E42;
+    --teal: #387F84;
+    --gold: #DCB15B;
+    --sage: #89A373;
+    --rust: #C0614A;
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #387F84;
+    --success: #3fb950;
+    --error: #f85149;
+    --warning: #d29922;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--teal), var(--navy));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: white;
+    flex-shrink: 0;
+  }
+  .header-text h1 { font-size: 16px; font-weight: 700; color: var(--text); }
+  .header-text p { font-size: 12px; color: var(--muted); }
+  .version-badge {
+    margin-left: auto;
+    background: rgba(56,127,132,0.15);
+    border: 1px solid rgba(56,127,132,0.3);
+    color: var(--teal);
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+  }
+  /* MAIN LAYOUT */
+  main {
+    flex: 1;
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .card-title {
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--teal);
+  }
+  /* API KEY */
+  .api-row {
+    display: flex; gap: 10px; align-items: center;
+  }
+  .api-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'Consolas', monospace;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .api-input:focus { border-color: var(--teal); }
+  .api-input::placeholder { color: var(--muted); }
+  .btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+    border: none; cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-primary {
+    background: var(--teal);
+    color: white;
+  }
+  .btn-primary:hover { background: #2d6b70; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--teal); color: var(--teal); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: var(--text); }
+  .api-status {
+    font-size: 12px;
+    margin-top: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .api-status.saved { color: var(--success); }
+  .api-status.missing { color: var(--warning); }
+  /* UPLOAD ZONE */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--teal);
+    background: rgba(56,127,132,0.05);
+  }
+  .upload-zone input {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  }
+  .upload-icon { font-size: 36px; margin-bottom: 12px; }
+  .upload-zone h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .upload-zone p { font-size: 13px; color: var(--muted); }
+  .file-loaded {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(56,127,132,0.1);
+    border: 1px solid rgba(56,127,132,0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .file-loaded .file-icon { font-size: 24px; }
+  .file-loaded .file-info { flex: 1; }
+  .file-loaded .file-name { font-size: 14px; font-weight: 600; color: var(--teal); }
+  .file-loaded .file-size { font-size: 12px; color: var(--muted); }
+  /* OPTIONS */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .option-group label {
+    display: block;
+    font-size: 12px; font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .option-group select, .option-group input[type="text"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .option-group select:focus, .option-group input:focus { border-color: var(--teal); }
+  /* GENERATE BUTTON */
+  .generate-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--teal), #2d6b70);
+    color: white;
+    font-size: 15px; font-weight: 700;
+    border: none; border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .generate-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(56,127,132,0.3); }
+  .generate-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  /* PROGRESS */
+  .progress-card { display: none; }
+  .progress-card.active { display: block; }
+  .stage-list { display: flex; flex-direction: column; gap: 10px; }
+  .stage {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: var(--surface2);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .stage.active {
+    border-color: var(--teal);
+    background: rgba(56,127,132,0.08);
+  }
+  .stage.done {
+    border-color: rgba(63,185,80,0.3);
+    background: rgba(63,185,80,0.05);
+  }
+  .stage.error {
+    border-color: rgba(248,81,73,0.3);
+    background: rgba(248,81,73,0.05);
+  }
+  .stage-icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
+  .stage-text { flex: 1; }
+  .stage-name { font-size: 13px; font-weight: 600; }
+  .stage-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(56,127,132,0.3);
+    border-top-color: var(--teal);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  /* PROGRESS BAR */
+  .progress-bar-wrap {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  /* LOG */
+  .log-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'Consolas', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    max-height: 140px;
+    overflow-y: auto;
+    margin-top: 16px;
+  }
+  .log-line { padding: 2px 0; }
+  .log-line.info { color: var(--muted); }
+  .log-line.success { color: var(--success); }
+  .log-line.warn { color: var(--warning); }
+  .log-line.err { color: var(--error); }
+  /* RESULTS */
+  .results-card { display: none; }
+  .results-card.active { display: block; }
+  .results-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .results-icon { font-size: 32px; }
+  .results-title { font-size: 18px; font-weight: 700; }
+  .results-sub { font-size: 13px; color: var(--muted); }
+  .download-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .download-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .download-session {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .download-session.s1 { color: var(--teal); }
+  .download-session.s2 { color: #7c3aed; }
+  .download-name { font-size: 13px; font-weight: 600; }
+  .download-meta { font-size: 12px; color: var(--muted); }
+  .download-btn {
+    margin-top: 4px;
+    padding: 8px 14px;
+    font-size: 12px; font-weight: 600;
+    border-radius: 6px;
+    border: none; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    width: fit-content;
+  }
+  .download-btn.s1 { background: rgba(56,127,132,0.15); color: var(--teal); border: 1px solid rgba(56,127,132,0.3); }
+  .download-btn.s2 { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+  .download-btn:hover { filter: brightness(1.2); }
+  .restart-row { display: flex; justify-content: center; }
+  /* EXTRACT PREVIEW */
+  .extract-preview {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Consolas', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 12px;
+    display: none;
+  }
+  .extract-preview.visible { display: block; }
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
 </style>
 </head>
 <body>
+
 <header>
-  <div class="logo">
-    <div class="logo-mark" aria-hidden="true">E</div>
-    <div><div class="logo-name">EduWonderLab</div><div class="logo-sub">Neft.Alba · BCPS · Grade 6 Math</div></div>
+  <div class="logo">EW</div>
+  <div class="header-text">
+    <h1>EduWonderLab · Notebook Engine</h1>
+    <p>Upload a Reveal Math PPTX → Generate S1 + S2 Student Notebooks</p>
   </div>
-  <div class="header-right">
-    <div class="status-dot" title="System ready"></div>
-    <div class="badge">LP ENGINE v3.2</div>
-  </div>
+  <span class="version-badge">v6.0</span>
 </header>
 
 <main>
-  <p class="page-eyebrow">Reveal Math · BCPS Grade 6</p>
-  <h1 class="page-title">Lesson Plan Engine</h1>
-  <p class="page-sub">Upload your Reveal Math PPTX. The engine extracts all values verbatim from your slides, lets you verify them, then generates two deployment-ready lesson plans with full QA.</p>
 
-  <!-- ══ INPUT SECTION ══ -->
-  <div id="input-section">
-
-    <!-- STEP 1: FILE UPLOAD -->
-    <div class="card" id="card-upload">
-      <div class="card-header">
-        <div class="step-badge" id="badge-1">1</div>
-        <div>
-          <div class="card-title">Upload Lesson Slides</div>
-          <div class="card-hint">Reveal Math PPTX — speaker notes, scenarios, vocabulary, objectives. Content extracted verbatim.</div>
-        </div>
-      </div>
-
-      <!-- Hidden file input — triggered by JS, not CSS overlay -->
-      <input type="file" id="file-input" accept=".pptx" style="display:none" aria-label="Choose PPTX file">
-
-      <!-- Drop zone — no child input overlay -->
-      <div class="upload-zone" id="drop-zone" role="region" aria-label="File upload area">
-        <div id="upload-idle">
-          <span class="upload-icon" aria-hidden="true">📊</span>
-          <div class="upload-text"><strong>Drag &amp; drop</strong> your PPTX here</div>
-          <button type="button" class="browse-btn" id="browse-btn">
-            <span aria-hidden="true">📂</span> Browse Files
-          </button>
-          <div class="upload-meta">.pptx only · max 50 MB</div>
-        </div>
-        <div id="upload-ready" style="display:none">
-          <span class="upload-icon" aria-hidden="true">✅</span>
-          <div class="file-pill" id="file-pill">
-            <span aria-hidden="true">📎</span>
-            <span id="file-name-display"></span>
-            <span id="file-size-display" style="font-weight:300;color:var(--muted)"></span>
-            <button type="button" class="file-remove-btn" id="remove-file-btn" aria-label="Remove file">✕</button>
-          </div>
-        </div>
-      </div>
-      <div class="field-err" id="err-file" role="alert"></div>
+  <!-- API KEY -->
+  <div class="card" id="apiCard">
+    <div class="card-title"><span class="dot"></span>Anthropic API Key</div>
+    <div class="api-row">
+      <input type="password" class="api-input" id="apiKeyInput" placeholder="sk-ant-..." autocomplete="off">
+      <button class="btn btn-primary" onclick="saveApiKey()">Save</button>
+      <button class="btn btn-ghost" onclick="clearApiKey()">Clear</button>
     </div>
+    <div class="api-status" id="apiStatus"></div>
+  </div>
 
-    <!-- STEP 2: SESSION DETAILS -->
-    <div class="card">
-      <div class="card-header">
-        <div class="step-badge">2</div>
-        <div>
-          <div class="card-title">Session Details</div>
-          <div class="card-hint">Applied to both lesson plan headers and the Session 2 cross-reference.</div>
-        </div>
+  <!-- UPLOAD -->
+  <div class="card" id="uploadCard">
+    <div class="card-title"><span class="dot"></span>Lesson PPTX</div>
+    <div class="upload-zone" id="uploadZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <input type="file" accept=".pptx" onchange="handleFileSelect(event)" id="fileInput">
+      <div class="upload-icon">📊</div>
+      <h3>Drop your Reveal Math PPTX here</h3>
+      <p>or click to browse · .pptx files only · max 10MB</p>
+    </div>
+    <div id="fileLoaded" style="display:none"></div>
+  </div>
+
+  <!-- OPTIONS -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span>Options</div>
+    <div class="options-grid">
+      <div class="option-group">
+        <label>Unit</label>
+        <input type="text" id="optUnit" placeholder="e.g. Unit 9" value="Unit 9">
       </div>
-      <div class="field-row">
-        <div>
-          <label class="field-label" for="lesson-date">Lesson Date</label>
-          <input type="date" id="lesson-date">
-        </div>
-        <div>
-          <label class="field-label" for="unit-lesson">Unit / Lesson Label</label>
-          <input type="text" id="unit-lesson" placeholder="e.g. Unit 9 Lesson 3">
-        </div>
+      <div class="option-group">
+        <label>Lesson</label>
+        <input type="text" id="optLesson" placeholder="e.g. Lesson 3" value="Lesson 3">
       </div>
+      <div class="option-group">
+        <label>Standard</label>
+        <input type="text" id="optStandard" placeholder="e.g. 6.EE.C.9" value="6.EE.C.9">
+      </div>
+      <div class="option-group">
+        <label>Output</label>
+        <select id="optOutput">
+          <option value="both">Both S1 + S2</option>
+          <option value="s1">Session 1 only</option>
+          <option value="s2">Session 2 only</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERATE -->
+  <button class="generate-btn" id="generateBtn" onclick="startGeneration()" disabled>
+    <span>⚡</span> Generate Student Notebooks
+  </button>
+
+  <!-- PROGRESS -->
+  <div class="card progress-card" id="progressCard">
+    <div class="card-title"><span class="dot"></span>Generating</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+    <div class="stage-list" id="stageList"></div>
+    <div class="log-box" id="logBox"></div>
+    <div class="extract-preview" id="extractPreview"></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="card results-card" id="resultsCard">
+    <div class="results-header">
+      <span class="results-icon">🎉</span>
       <div>
-        <label class="field-label">Block Length</label>
-        <div class="radio-group" role="radiogroup" aria-label="Block length">
-          <label class="radio-pill sel" id="pill-90">
-            <input type="radio" name="block" value="90" checked>
-            <div class="rp-label">90 min</div>
-            <div class="rp-desc">8 phases · full block</div>
-          </label>
-          <label class="radio-pill" id="pill-45">
-            <input type="radio" name="block" value="45">
-            <div class="rp-label">45 min</div>
-            <div class="rp-desc">5 phases · compressed</div>
-          </label>
-        </div>
+        <div class="results-title">Notebooks Ready</div>
+        <div class="results-sub" id="resultsSubtext"></div>
       </div>
     </div>
-
-    <!-- STEP 3: API KEY -->
-    <div class="card">
-      <div class="card-header">
-        <div class="step-badge">3</div>
-        <div>
-          <div class="card-title">Anthropic API Key</div>
-          <div class="card-hint">Held in sessionStorage by default. Opt in to persist across sessions.</div>
-        </div>
-      </div>
-      <div class="api-wrap">
-        <input type="password" id="api-key" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false" aria-label="Anthropic API key">
-        <button class="toggle-vis-btn" id="toggle-key-btn" type="button">show</button>
-      </div>
-      <div class="field-err" id="err-key" role="alert"></div>
-      <div class="key-persist-row">
-        <input type="checkbox" id="persist-key">
-        <label class="key-persist-label" for="persist-key">Remember key on this device (localStorage)</label>
-      </div>
-      <div class="info-box"><strong>Privacy:</strong> Your key is sent only to <code>api.anthropic.com/v1/messages</code> directly from your browser. No backend. No other network requests.</div>
+    <div class="download-grid" id="downloadGrid"></div>
+    <div class="restart-row">
+      <button class="btn btn-secondary" onclick="restart()">↩ Generate Another</button>
     </div>
-
-    <button class="gen-btn" id="generate-btn" type="button">
-      <span aria-hidden="true">⚡</span> Extract &amp; Generate Lesson Plans
-    </button>
-  </div><!-- /input-section -->
-
-  <!-- ══ REVIEW SECTION ══ -->
-  <div id="review-section" aria-live="polite">
-    <div class="review-card">
-      <div class="review-header">
-        <div class="review-icon" aria-hidden="true">🔍</div>
-        <div>
-          <div class="review-title">Verify Extracted Values</div>
-          <div class="review-sub">Review what the engine found. Edit any field. Blank = not found — fill it in.</div>
-        </div>
-      </div>
-      <div id="quality-gate-msg" class="quality-gate" style="display:none"></div>
-      <p style="font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:10px">Session 1</p>
-      <div class="review-grid" id="review-grid-s1"></div>
-      <p style="font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin:14px 0 10px">Session 2</p>
-      <div class="review-grid" id="review-grid-s2"></div>
-      <div class="review-actions">
-        <button class="btn-confirm" id="confirm-btn" type="button">Generate Lesson Plans →</button>
-        <button class="btn-back" id="back-btn" type="button">← Back / Re-upload</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ PROGRESS SECTION ══ -->
-  <div id="progress-section" aria-live="polite">
-    <div class="progress-card">
-      <div class="progress-header">
-        <div class="progress-heading">Generating…</div>
-        <div class="progress-pct" id="prog-pct">0%</div>
-      </div>
-      <div class="prog-bar-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="prog-track">
-        <div class="prog-bar-fill" id="prog-fill"></div>
-      </div>
-      <div class="stage-list" id="stage-list"></div>
-      <div class="cancel-wrap">
-        <button class="cancel-btn" id="cancel-btn" type="button">✕ Cancel</button>
-      </div>
-      <div class="log-terminal" role="log">
-        <div class="log-titlebar" aria-hidden="true">
-          <div class="log-dot" style="background:#f85149"></div>
-          <div class="log-dot" style="background:#d29922"></div>
-          <div class="log-dot" style="background:#3fb950"></div>
-        </div>
-        <div class="log-inner" id="log-inner"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ ERROR SECTION ══ -->
-  <div id="error-section" role="alert" aria-live="assertive">
-    <div class="err-title"><span aria-hidden="true">⚠</span> Generation Failed</div>
-    <div class="err-msg" id="err-msg"></div>
-    <div class="err-detail-wrap">
-      <button class="err-detail-toggle" id="err-detail-toggle" type="button">Show technical details</button>
-      <div class="err-detail" id="err-detail"></div>
-    </div>
-    <div class="err-actions">
-      <button class="btn-retry" id="retry-btn" type="button">↩ Retry from Checkpoint</button>
-      <button class="btn-secondary" id="reset-from-err-btn" type="button">Start Over</button>
-    </div>
-  </div>
-
-  <!-- ══ RESULTS SECTION ══ -->
-  <div id="results-section" aria-live="polite">
-    <div class="results-card">
-      <div class="results-head">
-        <div class="results-icon-wrap" aria-hidden="true">✅</div>
-        <div>
-          <div class="results-title">Lesson Plans Ready</div>
-          <div class="results-meta" id="results-meta"></div>
-        </div>
-      </div>
-      <div class="qa-banner" id="qa-banner"></div>
-      <div class="dl-list" id="dl-list"></div>
-    </div>
-    <button class="btn-reset" id="new-gen-btn" type="button">↩ Generate Another Set</button>
   </div>
 
 </main>
-<footer>EduWonderLab · Neft.Alba · LP Engine v3.2 · Reveal Math BCPS Grade 6 · 2026</footer>
 
-<!-- JSZip for PPTX parsing and DOCX packing -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
-  integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg=="
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<footer>EduWonderLab © · Notebook Engine v6.0 · CCSS Grade 6 · Reveal Math</footer>
 
 <script>
-'use strict';
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const GATEWAY_URL = "https://gateway.ai.cloudflare.com/v1/c68f3337bff203b1bd7f2b92dbb9de44/claudenotebookengine/anthropic";
+const MODEL = "claude-sonnet-4-5";
+const MAX_TOKENS = 8000;
 
-// ══════════════════════════════════════════════════════════
-// CONSTANTS
-// ══════════════════════════════════════════════════════════
-const MODEL       = 'claude-sonnet-4-6';
-const LS_KEY      = 'ewl_api_key';
-const SS_KEY      = 'ewl_api_key_session';
-const MAX_MB      = 50;
-const API_TIMEOUT = 180000;
-const RETRY_MAX   = 3;
-const RETRY_BASE  = 1500;
-
-const SPED_STUDENTS = ['M.E.','R.B.','J.C.','R.M.G.','J.L.','S.D.L.P.','A.M.M.'];
-const REQUIRED_SECTIONS = [
-  'DO NOW','STANDARDS TABLE','OBJECTIVES','LESSON PROCEDURES',
-  'VOCABULARY','MISCONCEPTIONS','SMALL-GROUP STATIONS',
-  'STUDENT NOTE SHEET','EXIT TICKET','IEP ACCOMMODATIONS'
-];
-const STAGES = [
-  { id:'extract',  label:'Extracting PPTX — slides, notes, tables, scenarios' },
-  { id:'generate', label:'Generating Session 1 + Session 2 lesson plans' },
-  { id:'qa',       label:'Running QA audit — sections, TEACH, WIDA, SPED' },
-  { id:'docx',     label:'Compiling deployment-ready .docx files' },
-];
-
-// ══════════════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════════════
-const State = {
-  uploadedFile: null,
-  blockLength: '90',
-  apiKey: '',
-  dateStr: '',
-  dateVal: '',
-  unitLesson: '',
-  extract: null,
-  rawExtract: null,
-  s1Raw: '',
-  s2Raw: '',
-  generatedFiles: [],
-  objectURLs: [],
-  abortCtrl: null,
-  currentStage: null,
-  cancelled: false,
+// ─── PALETTE (LOCKED v1.0) ────────────────────────────────────────────────────
+const PAL = {
+  bg:        "F7F4EE",
+  navy:      "1C2E42",
+  body:      "242A30",
+  teal:      "387F84",
+  gold:      "DCB15B",
+  sage:      "89A373",
+  rust:      "C0614A",
+  cardBlue:  "EAF2F7",
+  cardCream: "FCF5E0",
+  cardGray:  "E8EDF3",
+  cardSage:  "EDF2E8",
+  cardRust:  "F5EAE7",
+  muted:     "5C656E",
+  border:    "D6DBDF",
+  writeLine: "A8B2BC",
+  purple:    "7c3aed",
+  purpleLight: "EDE9FE"
 };
 
-function resetState(full = false) {
-  State.objectURLs.forEach(u => URL.revokeObjectURL(u));
-  State.objectURLs = [];
-  State.generatedFiles = [];
-  State.s1Raw = '';
-  State.s2Raw = '';
-  State.currentStage = null;
-  State.cancelled = false;
-  if (State.abortCtrl) { State.abortCtrl.abort(); State.abortCtrl = null; }
-  if (full) { State.extract = null; State.rawExtract = null; State.uploadedFile = null; }
-}
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let state = {
+  apiKey: null,
+  fileData: null,
+  fileName: null,
+  fileSize: null,
+  extract: null,
+  contentSpec: null,
+  s1Blob: null,
+  s2Blob: null
+};
 
-// ══════════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════════
-// Safety net — if anything uncaught crashes, show error section instead of blank screen
-window.addEventListener('error', function(e) {
-  console.error('[LP Engine] Uncaught error:', e.error || e.message);
-  const es = document.getElementById('error-section');
-  const em = document.getElementById('err-msg');
-  const ed = document.getElementById('err-detail');
-  if (es && em) {
-    em.textContent = 'Unexpected error — see details below.';
-    if (ed) { ed.textContent = (e.error && e.error.stack) || e.message || 'Unknown error'; ed.classList.add('show'); }
-    es.style.display = '';
-    // Make sure at least one section is visible
-    const ps = document.getElementById('progress-section');
-    const is = document.getElementById('input-section');
-    if (ps && ps.style.display === 'none' && is && is.style.display === 'none') {
-      is.style.display = '';
-    }
-  }
-});
-
-window.addEventListener('unhandledrejection', function(e) {
-  console.error('[LP Engine] Unhandled promise rejection:', e.reason);
-  const es = document.getElementById('error-section');
-  const em = document.getElementById('err-msg');
-  const ed = document.getElementById('err-detail');
-  if (es && em) {
-    em.textContent = 'Unexpected error — see details below.';
-    if (ed) { ed.textContent = (e.reason && e.reason.stack) || String(e.reason) || 'Unknown rejection'; ed.classList.add('show'); }
-    es.style.display = '';
-    const ps = document.getElementById('progress-section');
-    const is = document.getElementById('input-section');
-    if (ps && ps.style.display === 'none' && is && is.style.display === 'none') {
-      is.style.display = '';
-    }
-  }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-  // Visible init banner
-  var initBanner = document.createElement('div');
-  initBanner.id = 'init-banner';
-  initBanner.style.cssText = 'position:fixed;bottom:12px;right:12px;background:#1C2E42;color:#fff;font-family:monospace;font-size:11px;padding:6px 12px;border-radius:6px;z-index:9999;opacity:0.9';
-  initBanner.textContent = 'JS: loading...';
-  document.body.appendChild(initBanner);
-  // Set today's date
-  const now = new Date();
-  const d = document.getElementById('lesson-date');
-  if (d) d.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-
-  // Restore saved key
-  const sk = () => { try { return sessionStorage.getItem(SS_KEY); } catch(e) { return null; } };
-  const lk = () => { try { return localStorage.getItem(LS_KEY); } catch(e) { return null; } };
-  const rk = sk() || lk() || '';
-  if (rk) {
-    const k = document.getElementById('api-key');
-    if (k) k.value = rk;
-    const p = document.getElementById('persist-key');
-    if (lk() && p) p.checked = true;
-  }
-
-  buildStageList();
+// ─── API KEY ──────────────────────────────────────────────────────────────────
+function loadApiKey() {
   try {
-    wireEvents();
-    initBanner.textContent = 'JS: ready ✓ — click Generate to start';
-    setTimeout(function(){ if(initBanner) initBanner.style.display='none'; }, 4000);
-  } catch(err) {
-    initBanner.style.background = '#C0614A';
-    initBanner.textContent = 'INIT FAILED: ' + err.message;
-    console.error('[LP Engine] wireEvents failed:', err);
-  }
-});
-
-// ══════════════════════════════════════════════════════════
-// EVENT WIRING — all in one clean function, no nested definitions
-// ══════════════════════════════════════════════════════════
-function wireEvents() {
-  // ── File input (direct listener on the hidden <input>, not delegated) ──
-  const fileInput = document.getElementById('file-input');
-  fileInput.addEventListener('change', function() {
-    const f = this.files && this.files[0];
-    if (!f) return;
-    if (!f.name.toLowerCase().endsWith('.pptx')) {
-      showFieldErr('err-file', 'Please select a .pptx file.');
-      this.value = '';
-      return;
+    const k = localStorage.getItem("ewl_apikey");
+    if (k) {
+      state.apiKey = k;
+      document.getElementById("apiKeyInput").value = k;
+      showApiStatus("saved", "✓ API key loaded from storage");
+    } else {
+      showApiStatus("missing", "⚠ No API key saved yet");
     }
-    clearFieldErr('err-file');
-    handleFile(f);
-  });
-
-  // ── Browse button triggers the hidden input ──
-  document.getElementById('browse-btn').addEventListener('click', function() {
-    document.getElementById('file-input').click();
-  });
-
-  // ── Drag and drop on the zone ──
-  const dz = document.getElementById('drop-zone');
-  dz.addEventListener('dragover', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.classList.add('drag-over');
-  });
-  dz.addEventListener('dragleave', function(e) {
-    if (!this.contains(e.relatedTarget)) this.classList.remove('drag-over');
-  });
-  dz.addEventListener('drop', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.classList.remove('drag-over');
-    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-    if (!f) { showFieldErr('err-file', 'No file detected. Try the Browse button.'); return; }
-    if (!f.name.toLowerCase().endsWith('.pptx')) { showFieldErr('err-file', 'Please drop a .pptx file.'); return; }
-    clearFieldErr('err-file');
-    handleFile(f);
-  });
-
-  // ── Remove file ──
-  document.getElementById('remove-file-btn').addEventListener('click', function(e) {
-    e.stopPropagation();
-    clearFile();
-  });
-
-  // ── Block length radio pills ──
-  document.querySelectorAll('input[name="block"]').forEach(function(r) {
-    r.addEventListener('change', function() {
-      State.blockLength = this.value;
-      document.getElementById('pill-90').classList.toggle('sel', this.value === '90');
-      document.getElementById('pill-45').classList.toggle('sel', this.value === '45');
-    });
-  });
-
-  // ── API key show/hide ──
-  document.getElementById('toggle-key-btn').addEventListener('click', function() {
-    const inp = document.getElementById('api-key');
-    const hide = inp.type === 'password';
-    inp.type = hide ? 'text' : 'password';
-    this.textContent = hide ? 'hide' : 'show';
-  });
-
-  // ── Persist key checkbox ──
-  document.getElementById('persist-key').addEventListener('change', function() {
-    if (!this.checked) { try { localStorage.removeItem(LS_KEY); } catch(_) {} }
-  });
-
-  // ── Main buttons ──
-  document.getElementById('generate-btn').addEventListener('click', handleGenerate);
-  document.getElementById('confirm-btn').addEventListener('click', proceedToGeneration);
-  document.getElementById('back-btn').addEventListener('click', function() {
-    showSection('input');
-    resetState(false);
-  });
-  document.getElementById('cancel-btn').addEventListener('click', function() {
-    State.cancelled = true;
-    if (State.abortCtrl) State.abortCtrl.abort();
-    log('Cancelled by user.', 'warn');
-    showErr('Generation cancelled.', '', true);
-  });
-  document.getElementById('retry-btn').addEventListener('click', resumeFromCheckpoint);
-  document.getElementById('reset-from-err-btn').addEventListener('click', fullReset);
-  document.getElementById('err-detail-toggle').addEventListener('click', function() {
-    const det = document.getElementById('err-detail');
-    const open = det.classList.toggle('show');
-    this.textContent = open ? 'Hide technical details' : 'Show technical details';
-  });
-  document.getElementById('new-gen-btn').addEventListener('click', fullReset);
+  } catch(e) {
+    showApiStatus("missing", "⚠ Storage unavailable — paste key each session");
+  }
+  updateGenerateBtn();
 }
 
-// ══════════════════════════════════════════════════════════
-// FILE HANDLING
-// ══════════════════════════════════════════════════════════
-function handleFile(f) {
-  if (f.size > MAX_MB * 1024 * 1024) {
-    showFieldErr('err-file', 'File exceeds ' + MAX_MB + ' MB.');
+function saveApiKey() {
+  const val = document.getElementById("apiKeyInput").value.trim();
+  if (!val.startsWith("sk-ant-")) {
+    showApiStatus("missing", "⚠ Key should start with sk-ant-");
     return;
   }
-  State.uploadedFile = f;
+  state.apiKey = val;
+  try { localStorage.setItem("ewl_apikey", val); } catch(e) {}
+  showApiStatus("saved", "✓ API key saved");
+  updateGenerateBtn();
+}
 
-  // Show the "ready" state
-  document.getElementById('upload-idle').style.display = 'none';
-  document.getElementById('upload-ready').style.display = '';
-  document.getElementById('file-name-display').textContent = f.name;
-  document.getElementById('file-size-display').textContent = (f.size / 1048576).toFixed(1) + ' MB';
-  document.getElementById('drop-zone').classList.add('has-file');
+function clearApiKey() {
+  state.apiKey = null;
+  document.getElementById("apiKeyInput").value = "";
+  try { localStorage.removeItem("ewl_apikey"); } catch(e) {}
+  showApiStatus("missing", "⚠ API key cleared");
+  updateGenerateBtn();
+}
 
-  const b1 = document.getElementById('badge-1');
-  b1.className = 'step-badge done';
-  b1.textContent = '✓';
+function showApiStatus(type, msg) {
+  const el = document.getElementById("apiStatus");
+  el.className = "api-status " + type;
+  el.textContent = msg;
+}
+
+// ─── FILE HANDLING ────────────────────────────────────────────────────────────
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById("uploadZone").classList.add("drag-over");
+}
+function handleDragLeave(e) {
+  document.getElementById("uploadZone").classList.remove("drag-over");
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById("uploadZone").classList.remove("drag-over");
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+
+function processFile(file) {
+  if (!file.name.endsWith(".pptx")) {
+    alert("Please upload a .pptx file.");
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    alert("File too large. Max 10MB.");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    state.fileData = e.target.result.split(",")[1]; // base64
+    state.fileName = file.name;
+    state.fileSize = (file.size / 1024).toFixed(0) + " KB";
+    showFileLoaded();
+    updateGenerateBtn();
+  };
+  reader.readAsDataURL(file);
+}
+
+function showFileLoaded() {
+  document.getElementById("uploadZone").style.display = "none";
+  const fl = document.getElementById("fileLoaded");
+  fl.style.display = "flex";
+  fl.innerHTML = `
+    <div class="file-loaded">
+      <span class="file-icon">📊</span>
+      <div class="file-info">
+        <div class="file-name">${state.fileName}</div>
+        <div class="file-size">${state.fileSize} · Ready for extraction</div>
+      </div>
+      <button class="btn btn-ghost" onclick="clearFile()">✕</button>
+    </div>`;
 }
 
 function clearFile() {
-  State.uploadedFile = null;
-  // Reset the file input value so same file can be re-selected
-  const fi = document.getElementById('file-input');
-  fi.value = '';
-
-  document.getElementById('upload-idle').style.display = '';
-  document.getElementById('upload-ready').style.display = 'none';
-  document.getElementById('drop-zone').classList.remove('has-file', 'drag-over');
-
-  const b1 = document.getElementById('badge-1');
-  b1.className = 'step-badge';
-  b1.textContent = '1';
+  state.fileData = null;
+  state.fileName = null;
+  document.getElementById("uploadZone").style.display = "block";
+  document.getElementById("fileLoaded").style.display = "none";
+  document.getElementById("fileInput").value = "";
+  updateGenerateBtn();
 }
 
-// ══════════════════════════════════════════════════════════
-// UI HELPERS
-// ══════════════════════════════════════════════════════════
-function showSection(w) {
-  document.getElementById('input-section').style.display    = w === 'input'    ? '' : 'none';
-  document.getElementById('review-section').style.display   = w === 'review'   ? '' : 'none';
-  document.getElementById('progress-section').style.display = w === 'progress' ? '' : 'none';
-  document.getElementById('results-section').style.display  = w === 'results'  ? '' : 'none';
-  if (w !== 'error') document.getElementById('error-section').style.display = 'none';
+function updateGenerateBtn() {
+  const btn = document.getElementById("generateBtn");
+  btn.disabled = !(state.apiKey && state.fileData);
 }
 
-function showFieldErr(id, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add('show');
-}
-function clearFieldErr(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = '';
-  el.classList.remove('show');
+// ─── STAGES ───────────────────────────────────────────────────────────────────
+const STAGES = [
+  { id: "extract",  icon: "🔍", name: "Extracting lesson content",    detail: "Claude Vision reads your PPTX slides" },
+  { id: "spec",     icon: "📝", name: "Generating notebook specs",    detail: "Building 10–14 slide content for S1 + S2" },
+  { id: "render",   icon: "🎨", name: "Rendering PPTX files",         detail: "PptxGenJS building S1 and S2 decks" },
+  { id: "deliver",  icon: "📦", name: "Preparing downloads",          detail: "Packaging both notebooks" }
+];
+
+function initStages() {
+  const list = document.getElementById("stageList");
+  list.innerHTML = STAGES.map(s => `
+    <div class="stage" id="stage-${s.id}">
+      <span class="stage-icon">${s.icon}</span>
+      <div class="stage-text">
+        <div class="stage-name">${s.name}</div>
+        <div class="stage-detail">${s.detail}</div>
+      </div>
+      <div class="stage-spinner" id="spinner-${s.id}" style="display:none"><div class="spinner"></div></div>
+    </div>`).join("");
 }
 
-function showErr(friendlyMsg, technicalDetail = '', fromCancel = false) {
-  document.getElementById('progress-section').style.display = 'none';
-  document.getElementById('error-section').style.display = '';
-  document.getElementById('err-msg').textContent = friendlyMsg;
-  const det = document.getElementById('err-detail');
-  det.textContent = technicalDetail || '';
-  det.classList.remove('show');
-  document.getElementById('err-detail-toggle').style.display = technicalDetail ? '' : 'none';
-  document.getElementById('retry-btn').style.display = fromCancel ? 'none' : '';
-  document.getElementById('generate-btn').disabled = false;
+function setStage(id, status, detail) {
+  const el = document.getElementById("stage-" + id);
+  const sp = document.getElementById("spinner-" + id);
+  el.className = "stage " + status;
+  if (detail) el.querySelector(".stage-detail").textContent = detail;
+  sp.style.display = (status === "active") ? "block" : "none";
 }
 
-function lockInputs(lock) {
-  ['lesson-date','unit-lesson','api-key','persist-key'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.disabled = lock;
+function setProgress(pct) {
+  document.getElementById("progressBar").style.width = pct + "%";
+}
+
+function log(msg, type = "info") {
+  const box = document.getElementById("logBox");
+  const line = document.createElement("div");
+  line.className = "log-line " + type;
+  line.textContent = "[" + new Date().toLocaleTimeString() + "] " + msg;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+// ─── CLAUDE API CALL ──────────────────────────────────────────────────────────
+async function callClaude(systemPrompt, userContent, label) {
+  log(`Calling Claude: ${label}...`);
+  const body = {
+    model: MODEL,
+    max_tokens: MAX_TOKENS,
+    system: systemPrompt,
+    messages: [{ role: "user", content: userContent }]
+  };
+
+  const res = await fetch(`${GATEWAY_URL}/v1/messages`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": state.apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify(body)
   });
-  document.querySelectorAll('input[name="block"]').forEach(r => r.disabled = lock);
-  document.getElementById('generate-btn').disabled = lock;
-  document.getElementById('browse-btn').disabled = lock;
-}
 
-// ══════════════════════════════════════════════════════════
-// STAGE LIST
-// ══════════════════════════════════════════════════════════
-function buildStageList() {
-  const list = document.getElementById('stage-list');
-  while (list.firstChild) list.removeChild(list.firstChild);
-  STAGES.forEach(s => {
-    const row = document.createElement('div');
-    row.className = 'stage-row';
-    row.id = 'row-' + s.id;
-    const ico = document.createElement('div');
-    ico.className = 's-icon wait';
-    ico.id = 'icon-' + s.id;
-    ico.textContent = '○';
-    const nm = document.createElement('div');
-    nm.className = 's-name dim';
-    nm.id = 'name-' + s.id;
-    nm.textContent = s.label;
-    const dt = document.createElement('div');
-    dt.className = 's-detail';
-    dt.id = 'detail-' + s.id;
-    row.append(ico, nm, dt);
-    list.appendChild(row);
-  });
-}
-
-const STAGE_ICONS = { wait:'○', run:'◎', ok:'✓', skip:'—', fail:'✕' };
-function setStage(id, state, detail = '') {
-  const ico = document.getElementById('icon-' + id);
-  const nm  = document.getElementById('name-' + id);
-  const dt  = document.getElementById('detail-' + id);
-  if (ico) { ico.className = 's-icon ' + state; ico.textContent = STAGE_ICONS[state] || '○'; }
-  if (nm)  { nm.className = 's-name' + (state === 'wait' ? ' dim' : ''); }
-  if (dt)  dt.textContent = detail;
-}
-
-function setProgress(n, total = STAGES.length) {
-  const pct = Math.round((n / total) * 100);
-  const fill  = document.getElementById('prog-fill');
-  const track = document.getElementById('prog-track');
-  const lbl   = document.getElementById('prog-pct');
-  if (fill)  fill.style.width = pct + '%';
-  if (track) track.setAttribute('aria-valuenow', pct);
-  if (lbl)   lbl.textContent = pct + '%';
-}
-
-// ══════════════════════════════════════════════════════════
-// LOG
-// ══════════════════════════════════════════════════════════
-function log(msg, level = '') {
-  const inner = document.getElementById('log-inner');
-  if (!inner) return;
-  const line = document.createElement('div');
-  line.className = 'log-line' + (level ? ' ' + level : '');
-  const ts = document.createElement('span');
-  ts.className = 'log-ts';
-  ts.textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
-  const me = document.createElement('span');
-  me.className = 'log-msg';
-  me.textContent = msg;
-  line.append(ts, me);
-  inner.appendChild(line);
-  inner.scrollTop = inner.scrollHeight;
-}
-
-// ══════════════════════════════════════════════════════════
-// PPTX EXTRACTION
-// ══════════════════════════════════════════════════════════
-async function extractPptxContent(file) {
-  const buf = await file.arrayBuffer();
-  const zip = await JSZip.loadAsync(buf);
-
-  const slideNames = Object.keys(zip.files)
-    .filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n))
-    .sort((a, b) => (+a.match(/\d+/)[0]) - (+b.match(/\d+/)[0]));
-
-  if (!slideNames.length) throw new Error('No slides found. Verify this is a valid .pptx file.');
-
-  const parts = [];
-  for (const sn of slideNames) {
-    const num = +sn.match(/\d+/)[0];
-    const xml = await zip.files[sn].async('string');
-    const texts  = extractTextFromXml(xml);
-    const tables = extractTablesFromXml(xml);
-
-    let notes = '';
-    const np = `ppt/notesSlides/notesSlide${num}.xml`;
-    if (zip.files[np]) {
-      const nxml = await zip.files[np].async('string');
-      notes = extractTextFromXml(nxml).join(' ').trim();
-    }
-
-    const blocks = [];
-    if (texts.length) blocks.push(texts.join('\n'));
-    tables.forEach((t, i) => blocks.push(`[TABLE ${i+1}]\n${t}`));
-    if (notes) blocks.push(`[NOTES]\n${notes}`);
-    if (blocks.length) parts.push(`══ SLIDE ${num} ══\n${blocks.join('\n')}`);
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`API error ${res.status}: ${err.substring(0, 200)}`);
   }
 
-  return { text: parts.join('\n\n'), slideCount: slideNames.length };
+  const data = await res.json();
+  const text = data.content.map(b => b.text || "").join("");
+  log(`Claude response received (${text.length} chars)`, "success");
+  return text;
 }
 
-const NAMED_ENTITIES = {
-  amp:'&', lt:'<', gt:'>', quot:'"', apos:"'", nbsp:' ',
-  ndash:'–', mdash:'—', lsquo:'\u2018', rsquo:'\u2019',
-  ldquo:'\u201C', rdquo:'\u201D', bull:'\u2022', hellip:'\u2026',
-  times:'\u00D7', divide:'\u00F7', minus:'\u2212', le:'\u2264',
-  ge:'\u2265', ne:'\u2260', asymp:'\u2248', infin:'\u221E',
-  pi:'\u03C0', deg:'\u00B0', cent:'\u00A2', pound:'\u00A3',
-  euro:'\u20AC', frac12:'\u00BD', frac14:'\u00BC', frac34:'\u00BE',
-  alpha:'\u03B1', beta:'\u03B2'
-};
+// ─── EXTRACTION PROMPT ────────────────────────────────────────────────────────
+const EXTRACT_SYSTEM = `You are a precise lesson content extractor for EduWonderLab. 
+You receive a Reveal Math Grade 6 PPTX as base64. 
+Extract ALL lesson content and return ONLY valid JSON — no markdown, no preamble, no explanation.
 
-function decodeXmlEntities(s) {
-  return s
-    .replace(/&([a-zA-Z][a-zA-Z0-9]*);/g, (_, n) => NAMED_ENTITIES[n] !== undefined ? NAMED_ENTITIES[n] : _)
-    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n))
-    .replace(/&#x([0-9A-Fa-f]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)));
-}
-
-function extractTextFromXml(xml) {
-  const results = [];
-  const paraRe = /<a:p\b[^>]*>([\s\S]*?)<\/a:p>/g;
-  let pm;
-  while ((pm = paraRe.exec(xml)) !== null) {
-    const runRe = /<a:t\b[^>]*>([\s\S]*?)<\/a:t>/g;
-    let rm, buf = '';
-    while ((rm = runRe.exec(pm[1])) !== null) buf += rm[1];
-    const clean = decodeXmlEntities(buf.replace(/\s+/g, ' ').trim());
-    if (clean) results.push(clean);
+Return this exact structure:
+{
+  "session1": {
+    "context": "exact real-world scenario name",
+    "iv_name": "independent variable full name",
+    "dv_name": "dependent variable full name", 
+    "iv_symbol": "symbol e.g. x",
+    "dv_symbol": "symbol e.g. y",
+    "rate": "rate with units e.g. $45 per ticket",
+    "rate_value": 45,
+    "initial_value": 0,
+    "equation": "exact equation e.g. y = 45x",
+    "table_values": [[1,45],[2,90],[3,135],[5,225],[10,450]],
+    "graph_xmax": 12,
+    "graph_ymax": 500,
+    "graph_xlabel": "Number of Tickets",
+    "graph_ylabel": "Total Cost ($)",
+    "vocab_terms": ["independent variable","dependent variable","equation","rate","relationship"],
+    "content_objective": "I can identify independent and dependent variables by analyzing a real-world scenario.",
+    "language_objective": "I will explain the relationship between variables using sentence frames.",
+    "image_description": "brief description of any relevant image on slides"
+  },
+  "session2": {
+    "context": "second scenario if present, otherwise variation of session1",
+    "iv_name": "...",
+    "dv_name": "...",
+    "iv_symbol": "x",
+    "dv_symbol": "y",
+    "rate": "...",
+    "rate_value": 0,
+    "initial_value": 0,
+    "equation": "...",
+    "table_values": [],
+    "graph_xmax": 10,
+    "graph_ymax": 100,
+    "graph_xlabel": "...",
+    "graph_ylabel": "...",
+    "vocab_terms": [],
+    "content_objective": "...",
+    "language_objective": "...",
+    "image_description": "..."
+  },
+  "unit": "Unit 9",
+  "lesson": "Lesson 3",
+  "standard": "6.EE.C.9",
+  "slide_flags": {
+    "graphing_extension": true,
+    "error_analysis": true,
+    "real_world_connection": false,
+    "reflection": false
   }
-  return results;
 }
 
-function extractTablesFromXml(xml) {
-  const tables = [];
-  const tblRe = /<a:tbl\b[^>]*>([\s\S]*?)<\/a:tbl>/g;
-  let tm;
-  while ((tm = tblRe.exec(xml)) !== null) {
-    const rows = [];
-    const rowRe = /<a:tr\b[^>]*>([\s\S]*?)<\/a:tr>/g;
-    let rm;
-    while ((rm = rowRe.exec(tm[1])) !== null) {
-      const cells = [];
-      const cellRe = /<a:tc\b[^>]*>([\s\S]*?)<\/a:tc>/g;
-      let cm;
-      while ((cm = cellRe.exec(rm[1])) !== null)
-        cells.push(extractTextFromXml(cm[1]).join(' ').trim());
-      if (cells.some(c => c)) rows.push(cells.join(' | '));
-    }
-    if (rows.length) tables.push(rows.join('\n'));
-  }
-  return tables;
-}
+Rules:
+- Use EXACT values from slides, not invented ones
+- If a value is unclear, use your best inference and note it
+- table_values must be arrays of [x,y] pairs
+- slide_flags.graphing_extension = true if lesson includes coordinate grid work
+- slide_flags.error_analysis = true if 2+ common misconceptions are evident
+- slide_flags.reflection = always false for session1, always true for session2
+- Return ONLY the JSON object, nothing else`;
 
-// ══════════════════════════════════════════════════════════
-// API CLIENT
-// ══════════════════════════════════════════════════════════
-async function apiCall(system, user, maxTokens = 8000, attempt = 1) {
-  if (State.cancelled) throw new Error('Cancelled');
-  const ctrl = new AbortController();
-  State.abortCtrl = ctrl;
-  const timer = setTimeout(() => ctrl.abort(), API_TIMEOUT);
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      signal: ctrl.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': State.apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerously-allow-browser': 'true'
+// ─── SPEC GENERATION PROMPT ───────────────────────────────────────────────────
+const SPEC_SYSTEM = `You are EduWonderLab's notebook content generator for Grade 6 math (Reveal Math, BCPS).
+You receive a SCENARIO_EXTRACT JSON and generate complete 10-14 slide notebook specs for BOTH Session 1 and Session 2.
+Return ONLY valid JSON — no markdown fences, no preamble.
+
+LOCKED RULES (never violate):
+- All content traces to SCENARIO_EXTRACT — never invent values not in the extract
+- No student initials, no SPED labels (student-facing materials)
+- TWR frames use lesson's actual variable names
+- S2 explicitly references S1 in Cut-Sort, TWR Frame 4, Collab Q, Exit Tier 3
+- Slide count: 10 base + flagged optional slides (max 14)
+- Vocab terms match extract exactly
+- All math verified before including
+- Session 1 uses navy (#1C2E42) + teal (#387F84)
+- Session 2 uses purple (#7c3aed) + teal (#387F84)
+
+Return this structure:
+{
+  "session1": {
+    "slide_count": 10,
+    "slides": [
+      {
+        "num": 1,
+        "type": "title",
+        "title": "...",
+        "unit_label": "...",
+        "lesson_label": "...",
+        "standard": "...",
+        "content_objective": "...",
+        "language_objective": "...",
+        "before_after": true
       },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: maxTokens,
-        system,
-        messages: [{ role: 'user', content: user }]
-      })
-    });
-    clearTimeout(timer);
-    if (!resp.ok) {
-      let em;
-      try { const j = await resp.json(); em = j.error && j.error.message; } catch(_) {}
-      const msg = resp.status === 401 ? 'Invalid API key — check it starts with sk-ant-.' :
-                  resp.status === 400 ? 'Bad request (400): ' + (em || 'Check API key format.') :
-                  resp.status === 429 ? 'Rate limited — will retry.' :
-                  resp.status >= 500  ? 'Anthropic server error (' + resp.status + ').' :
-                  em || 'HTTP ' + resp.status;
-      if ((resp.status === 429 || resp.status >= 500) && attempt < RETRY_MAX) {
-        const delay = RETRY_BASE * Math.pow(2, attempt - 1) + Math.random() * 400;
-        log(msg + ' Retrying in ' + (delay/1000).toFixed(1) + 's… (' + (attempt+1) + '/' + RETRY_MAX + ')', 'warn');
-        await sleep(delay);
-        return apiCall(system, user, maxTokens, attempt + 1);
+      {
+        "num": 2,
+        "type": "be_curious",
+        "image_description": "...",
+        "notice_starters": ["I notice that ___ and ___.","I notice the ___ increases when ___."],
+        "wonder_starters": ["I wonder if ___ because ___.","What would happen if ___ changed to ___?"],
+        "twr_strip": ["The ___ depends on ___ because ___.","As ___ increases, ___ increases."],
+        "mindset_goal": "Today I will think like a mathematician by noticing patterns."
+      },
+      {
+        "num": 3,
+        "type": "vocabulary",
+        "terms": [
+          {"term":"independent variable","definition":"The variable YOU control or choose.","spanish":"variable independiente","example":"number of tickets you buy"},
+          {"term":"dependent variable","definition":"The variable that CHANGES based on the other.","spanish":"variable dependiente","example":"total cost depends on tickets"}
+        ]
+      },
+      {
+        "num": 4,
+        "type": "guided_practice",
+        "scenario_card": "...",
+        "table_headers": ["x — Number of Tickets","y — Total Cost ($)"],
+        "table_rows": [["1","$45"],["2","$90"],["3","$135"],["5","$225"],["10","$450"]],
+        "equation": "y = 45x",
+        "equation_scaffold": "y = ___ × x",
+        "graph_xlabel": "Number of Tickets",
+        "graph_ylabel": "Total Cost ($)",
+        "graph_xmax": 12,
+        "graph_ymax": 500,
+        "twr_prompt": "The total cost depends on ___ because ___.",
+        "plot_points": [[1,45],[2,90],[3,135],[5,225]]
+      },
+      {
+        "num": 5,
+        "type": "collaborative",
+        "scenario_card": "Same scenario — new values to find",
+        "partner_values": [[4,180],[6,270],[8,360]],
+        "discussion_q1": "How does doubling the ___ affect the ___?",
+        "discussion_q2": "Compare your graph to your partner's. What is the same? What is different?",
+        "twr_prompt": "We found that ___ because ___."
+      },
+      {
+        "num": 6,
+        "type": "independent",
+        "p1_stem": "If you buy 7 tickets, what is the total cost? Show your work.",
+        "p1_answer": "$315",
+        "p1_work": "y = 45 × 7 = 315",
+        "p2_stem": "The venue charges a $10 entry fee plus $45 per ticket. Write the new equation.",
+        "p2_answer": "y = 45x + 10",
+        "p2_work": "Total = flat fee + (rate × tickets)",
+        "p3_stem": "Explain why total cost is the dependent variable in this scenario.",
+        "p3_frame": "Total cost is dependent because it ___. You control ___, so that is ___."
+      },
+      {
+        "num": 7,
+        "type": "cut_sort",
+        "sort_title": "Sort: Independent or Dependent?",
+        "categories": ["Independent Variable","Dependent Variable"],
+        "cards": [
+          {"text":"Number of tickets purchased","category":"Independent Variable"},
+          {"text":"Total cost of tickets","category":"Dependent Variable"},
+          {"text":"Hours worked at a job","category":"Independent Variable"},
+          {"text":"Total pay earned","category":"Dependent Variable"},
+          {"text":"Number of items bought","category":"Independent Variable"},
+          {"text":"Amount spent","category":"Dependent Variable"}
+        ]
+      },
+      {
+        "num": 8,
+        "type": "twr",
+        "frames": [
+          {"label":"Frame 1","stem":"The independent variable is ___ because ___.","blanks":2},
+          {"label":"Frame 2","stem":"The dependent variable is ___ because it changes when ___ changes.","blanks":2},
+          {"label":"Frame 3","stem":"The equation ___ shows that ___ depends on ___.","blanks":3},
+          {"label":"Frame 4","stem":"As the number of ___ increases by 1, the total ___ increases by ___.","blanks":3}
+        ]
+      },
+      {
+        "num": 9,
+        "type": "exit_ticket",
+        "tier1": {"stem":"The independent variable is ___.  The dependent variable is ___.", "answer":"tickets / total cost"},
+        "tier2": {"stem":"Identify both variables AND explain the relationship in 2–3 sentences using: The ___ depends on ___ because ___.", "answer":"Total cost depends on tickets. y = 45x means for every ticket, cost increases by $45."},
+        "tier3": {"stem":"Compare two scenarios: buying tickets at $45 each vs. buying tickets at $45 each plus a $10 fee. How do the equations differ? What stays the same?","answer":"y=45x vs y=45x+10. Rate stays same, initial value changes."}
+      },
+      {
+        "num": 10,
+        "type": "goal_tracker",
+        "objective": "I can identify independent and dependent variables by analyzing a real-world scenario.",
+        "levels": [
+          {"num":1,"label":"Not Yet","desc":"I need more examples to understand."},
+          {"num":2,"label":"Getting There","desc":"I can identify with help."},
+          {"num":3,"label":"Got It","desc":"I can identify on my own."},
+          {"num":4,"label":"I Can Teach It","desc":"I can explain the relationship and write the equation."}
+        ]
       }
-      throw new Error(msg);
-    }
-    const data = await resp.json();
-    if (!data.content || !Array.isArray(data.content))
-      throw new Error('Unexpected API response shape.');
-    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
-    if (!text) {
-      const reason = data.stop_reason || 'unknown';
-      if (reason === 'max_tokens')
-        throw new Error('Response cut off (max_tokens). Try a simpler PPTX or reduce length.');
-      throw new Error('No text in API response. stop_reason: ' + reason);
-    }
-    return text;
-  } catch(e) {
-    clearTimeout(timer);
-    if (e.name === 'AbortError') {
-      if (State.cancelled) throw new Error('Cancelled');
-      throw new Error('API call timed out after 3 minutes. Check your connection and retry.');
-    }
-    if (e instanceof TypeError && attempt < RETRY_MAX) {
-      const delay = RETRY_BASE * Math.pow(2, attempt - 1) + Math.random() * 400;
-      log('Network error. Retrying in ' + (delay/1000).toFixed(1) + 's…', 'warn');
-      await sleep(delay);
-      return apiCall(system, user, maxTokens, attempt + 1);
-    }
-    throw e;
+    ]
+  },
+  "session2": {
+    "slide_count": 11,
+    "slides": []
   }
+}
+
+IMPORTANT for Session 2:
+- Replace S2 Be Curious image with a reference table of S1 exact values
+- Cut-Sort slide must sort equations from BOTH sessions into Proportional vs Not Proportional
+- TWR Frame 4 MUST compare S1 equation to S2 equation by name
+- Exit Tier 3 MUST reference both sessions
+- Add reflection slide (type: "reflection") as last optional slide for S2
+- All S2 problems use S2 scenario values, not S1 values
+- Generate COMPLETE slide data for session2 — do not leave it empty`;
+
+// ─── MAIN GENERATION ──────────────────────────────────────────────────────────
+async function startGeneration() {
+  const btn = document.getElementById("generateBtn");
+  btn.disabled = true;
+
+  // Show progress card
+  document.getElementById("progressCard").classList.add("active");
+  document.getElementById("resultsCard").classList.remove("active");
+  initStages();
+  setProgress(0);
+
+  const unit = document.getElementById("optUnit").value || "Unit 9";
+  const lesson = document.getElementById("optLesson").value || "Lesson 3";
+  const standard = document.getElementById("optStandard").value || "6.EE.C.9";
+  const outputMode = document.getElementById("optOutput").value;
+
+  try {
+    // ── STAGE 1: EXTRACT ─────────────────────────────────────────────────────
+    setStage("extract", "active");
+    setProgress(5);
+    log("Starting content extraction from PPTX...");
+
+    const extractUserContent = [
+      {
+        type: "document",
+        source: {
+          type: "base64",
+          media_type: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+          data: state.fileData
+        }
+      },
+      {
+        type: "text",
+        text: `Extract all lesson content from this Reveal Math PPTX. Unit: ${unit}, Lesson: ${lesson}, Standard: ${standard}. Return ONLY the JSON structure specified.`
+      }
+    ];
+
+    const extractRaw = await callClaude(EXTRACT_SYSTEM, extractUserContent, "extraction");
+    
+    let extract;
+    try {
+      const cleaned = extractRaw.replace(/```json\n?/g,"").replace(/```\n?/g,"").trim();
+      extract = JSON.parse(cleaned);
+      state.extract = extract;
+    } catch(e) {
+      throw new Error("Failed to parse extraction JSON: " + e.message + "\nRaw: " + extractRaw.substring(0,300));
+    }
+
+    // Show extract preview
+    const prev = document.getElementById("extractPreview");
+    prev.style.display = "block";
+    prev.textContent = JSON.stringify(extract, null, 2);
+    
+    log(`✓ Extracted: S1="${extract.session1?.context}", S2="${extract.session2?.context}"`, "success");
+    setStage("extract", "done", `S1: ${extract.session1?.context || "extracted"} · S2: ${extract.session2?.context || "extracted"}`);
+    setProgress(30);
+
+    // ── STAGE 2: SPEC GENERATION ──────────────────────────────────────────────
+    setStage("spec", "active");
+    log("Generating notebook content spec for S1 + S2...");
+
+    const specUserContent = `Generate complete notebook specs for both sessions based on this SCENARIO_EXTRACT:
+
+${JSON.stringify(extract, null, 2)}
+
+Unit: ${unit} | Lesson: ${lesson} | Standard: ${standard}
+
+Return ONLY the JSON spec. Make all content specific to the extracted scenarios.`;
+
+    const specRaw = await callClaude(SPEC_SYSTEM, specUserContent, "spec generation");
+
+    let spec;
+    try {
+      const cleaned = specRaw.replace(/```json\n?/g,"").replace(/```\n?/g,"").trim();
+      spec = JSON.parse(cleaned);
+      state.contentSpec = spec;
+    } catch(e) {
+      throw new Error("Failed to parse spec JSON: " + e.message + "\nRaw: " + specRaw.substring(0,300));
+    }
+
+    log(`✓ Spec generated: S1=${spec.session1?.slide_count} slides, S2=${spec.session2?.slide_count} slides`, "success");
+    setStage("spec", "done", `S1: ${spec.session1?.slide_count} slides · S2: ${spec.session2?.slide_count} slides`);
+    setProgress(60);
+
+    // ── STAGE 3: RENDER ───────────────────────────────────────────────────────
+    setStage("render", "active");
+    log("Rendering PPTX files with PptxGenJS...");
+
+    let s1Blob = null, s2Blob = null;
+
+    if (outputMode !== "s2") {
+      log("Building Session 1 notebook...");
+      s1Blob = await renderNotebook(spec.session1, extract.session1, "1", unit, lesson, standard);
+      log("✓ Session 1 rendered", "success");
+    }
+    if (outputMode !== "s1") {
+      log("Building Session 2 notebook...");
+      s2Blob = await renderNotebook(spec.session2, extract.session2, "2", unit, lesson, standard);
+      log("✓ Session 2 rendered", "success");
+    }
+
+    state.s1Blob = s1Blob;
+    state.s2Blob = s2Blob;
+
+    setStage("render", "done", "Both notebooks rendered successfully");
+    setProgress(90);
+
+    // ── STAGE 4: DELIVER ──────────────────────────────────────────────────────
+    setStage("deliver", "active");
+    log("Triggering downloads...");
+    setProgress(95);
+
+    if (s1Blob) triggerDownload(s1Blob, `${unit.replace(/\s/g,"-")}-${lesson.replace(/\s/g,"-")}-S1-Notebook.pptx`);
+    await sleep(300);
+    if (s2Blob) triggerDownload(s2Blob, `${unit.replace(/\s/g,"-")}-${lesson.replace(/\s/g,"-")}-S2-Notebook.pptx`);
+
+    setStage("deliver", "done");
+    setProgress(100);
+    log("✓ All downloads triggered", "success");
+
+    showResults(unit, lesson, standard, outputMode, spec);
+
+  } catch(err) {
+    log("ERROR: " + err.message, "err");
+    STAGES.forEach(s => {
+      const el = document.getElementById("stage-" + s.id);
+      if (el.classList.contains("active")) setStage(s.id, "error", "Failed: " + err.message.substring(0,80));
+    });
+    console.error(err);
+  }
+}
+
+// ─── PPTX RENDERER ───────────────────────────────────────────────────────────
+async function renderNotebook(sessionSpec, sessionExtract, sessionNum, unit, lesson, standard) {
+  const isS2 = sessionNum === "2";
+  const accentColor = isS2 ? PAL.purple : PAL.teal;
+  const accentLight = isS2 ? PAL.purpleLight : PAL.cardBlue;
+  const sessionLabel = "Session " + sessionNum;
+
+  let pres = new PptxGenJS();
+  pres.layout = "LAYOUT_WIDE";
+  pres.author = "EduWonderLab";
+  pres.subject = `${unit} ${lesson} ${sessionLabel} Student Notebook`;
+  pres.title = `EduWonderLab ${unit} ${lesson} ${sessionLabel}`;
+
+  const slides = sessionSpec?.slides || [];
+
+  for (const slideData of slides) {
+    const sld = pres.addSlide();
+    
+    // Background
+    sld.background = { color: PAL.bg };
+
+    // Header bar
+    sld.addShape(pres.ShapeType.rect, {
+      x: 0, y: 0, w: "100%", h: 0.55,
+      fill: { color: PAL.navy }
+    });
+
+    // Unit/lesson label in header
+    sld.addText(`${unit} · ${lesson} · ${sessionLabel}`, {
+      x: 0.2, y: 0.02, w: 7, h: 0.35,
+      fontSize: 10, bold: true, color: "FFFFFF",
+      fontFace: "Calibri", valign: "middle"
+    });
+
+    // Standard badge
+    sld.addText(standard, {
+      x: 8.5, y: 0.02, w: 1.3, h: 0.35,
+      fontSize: 9, bold: true, color: accentColor,
+      fontFace: "Calibri", align: "right", valign: "middle"
+    });
+
+    // Footer
+    sld.addText("EduWonderLab ©", {
+      x: 0, y: 7.2, w: "100%", h: 0.25,
+      fontSize: 8, color: PAL.muted, fontFace: "Calibri",
+      align: "center"
+    });
+
+    // Render by type
+    switch(slideData.type) {
+      case "title":       renderTitle(sld, pres, slideData, accentColor, sessionLabel, sessionNum); break;
+      case "be_curious":  renderBeCurious(sld, pres, slideData, accentColor, accentLight, sessionExtract, isS2); break;
+      case "vocabulary":  renderVocab(sld, pres, slideData, accentColor, accentLight); break;
+      case "guided_practice": renderGuided(sld, pres, slideData, accentColor, accentLight); break;
+      case "collaborative":   renderCollab(sld, pres, slideData, accentColor, accentLight); break;
+      case "independent":     renderIndependent(sld, pres, slideData, accentColor, accentLight); break;
+      case "cut_sort":        renderCutSort(sld, pres, slideData, accentColor, accentLight, isS2); break;
+      case "twr":             renderTWR(sld, pres, slideData, accentColor, accentLight); break;
+      case "exit_ticket":     renderExitTicket(sld, pres, slideData, accentColor, accentLight); break;
+      case "goal_tracker":    renderGoalTracker(sld, pres, slideData, accentColor, accentLight); break;
+      case "reflection":      renderReflection(sld, pres, slideData, accentColor, accentLight); break;
+      case "graphing_extension": renderGraphingExtension(sld, pres, slideData, accentColor, accentLight); break;
+      case "error_analysis":  renderErrorAnalysis(sld, pres, slideData, accentColor, accentLight); break;
+      default:                renderGeneric(sld, pres, slideData, accentColor); break;
+    }
+  }
+
+  return await pres.write({ outputType: "blob" });
+}
+
+// ─── SLIDE RENDERERS ──────────────────────────────────────────────────────────
+
+function renderTitle(sld, pres, d, accent, sessionLabel, sessionNum) {
+  const isS2 = sessionNum === "2";
+  // Large title area
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 3.2, fill: { color: isS2 ? "F3F0FF" : PAL.cardBlue } });
+
+  // Before/After checkboxes
+  sld.addText("☐ Before   ☐ After", {
+    x: 0.3, y: 0.6, w: 3, h: 0.4,
+    fontSize: 11, color: PAL.muted, fontFace: "Calibri"
+  });
+
+  // Main title
+  sld.addText(d.title || `${d.unit_label} ${d.lesson_label} Student Notebook`, {
+    x: 0.4, y: 1.0, w: 9.2, h: 1.4,
+    fontSize: 28, bold: true, color: PAL.navy,
+    fontFace: "Calibri", valign: "middle", align: "center"
+  });
+
+  // Session badge
+  sld.addShape(pres.ShapeType.rect, { x: 3.8, y: 2.35, w: 2.4, h: 0.45, fill: { color: accent }, line: { color: accent } });
+  sld.addText(sessionLabel, { x: 3.8, y: 2.35, w: 2.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  // Standard
+  sld.addText(`Standard: ${d.standard || "6.EE.C.9"}`, {
+    x: 0.4, y: 2.9, w: 9.2, h: 0.3,
+    fontSize: 11, color: PAL.muted, fontFace: "Calibri", align: "center"
+  });
+
+  // Objectives section
+  sld.addShape(pres.ShapeType.rect, { x: 0.3, y: 3.85, w: 9.4, h: 0.35, fill: { color: accent } });
+  sld.addText("LEARNING OBJECTIVES", { x: 0.3, y: 3.85, w: 9.4, h: 0.35, fontSize: 10, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  sld.addShape(pres.ShapeType.rect, { x: 0.3, y: 4.2, w: 9.4, h: 1.0, fill: { color: PAL.cardCream } });
+  sld.addText(`📌 Content: ${d.content_objective || "I can identify independent and dependent variables."}`, {
+    x: 0.5, y: 4.25, w: 9.0, h: 0.42,
+    fontSize: 12, color: PAL.body, fontFace: "Calibri", valign: "middle", wrap: true
+  });
+  sld.addText(`🗣 Language: ${d.language_objective || "I will explain relationships using sentence frames."}`, {
+    x: 0.5, y: 4.67, w: 9.0, h: 0.42,
+    fontSize: 12, color: PAL.body, fontFace: "Calibri", valign: "middle", wrap: true
+  });
+
+  // What's Inside
+  sld.addText("What's Inside: Vocabulary · Guided Practice · Collaborative Practice · Independent Practice · Exit Ticket", {
+    x: 0.3, y: 5.35, w: 9.4, h: 0.35,
+    fontSize: 10, color: PAL.muted, fontFace: "Calibri", align: "center", italic: true
+  });
+
+  sld.addText("For educational use only · EduWonderLab ©", {
+    x: 0.3, y: 5.75, w: 9.4, h: 0.25,
+    fontSize: 9, color: PAL.border, fontFace: "Calibri", align: "center"
+  });
+}
+
+function renderBeCurious(sld, pres, d, accent, accentLight, extract, isS2) {
+  sld.addText("BE CURIOUS", {
+    x: 0.3, y: 0.6, w: 9.4, h: 0.35,
+    fontSize: 13, bold: true, color: accent, fontFace: "Calibri", align: "center"
+  });
+
+  if (isS2 && extract?.table_values?.length) {
+    // S2: Reference table instead of image
+    sld.addShape(pres.ShapeType.rect, { x: 0.3, y: 1.0, w: 4.3, h: 4.8, fill: { color: PAL.cardBlue } });
+    sld.addText("Session 1 Reference Table", { x: 0.3, y: 1.05, w: 4.3, h: 0.35, fontSize: 11, bold: true, color: PAL.navy, fontFace: "Calibri", align: "center" });
+    sld.addText(`${extract.iv_name || "x"} → ${extract.dv_name || "y"}`, { x: 0.3, y: 1.4, w: 4.3, h: 0.3, fontSize: 10, color: PAL.muted, fontFace: "Calibri", align: "center" });
+    
+    const rows = extract.table_values?.slice(0,6) || [];
+    rows.forEach((row, i) => {
+      const y = 1.75 + i * 0.55;
+      sld.addShape(pres.ShapeType.rect, { x: 0.6, y, w: 1.6, h: 0.42, fill: { color: i % 2 === 0 ? PAL.cardCream : "FFFFFF" } });
+      sld.addShape(pres.ShapeType.rect, { x: 2.3, y, w: 1.6, h: 0.42, fill: { color: i % 2 === 0 ? PAL.cardCream : "FFFFFF" } });
+      sld.addText(String(row[0]), { x: 0.6, y, w: 1.6, h: 0.42, fontSize: 13, bold: true, color: PAL.navy, fontFace: "Calibri", align: "center", valign: "middle" });
+      sld.addText(String(row[1]), { x: 2.3, y, w: 1.6, h: 0.42, fontSize: 13, bold: true, color: accent, fontFace: "Calibri", align: "center", valign: "middle" });
+    });
+    sld.addText(`Equation: ${extract.equation || "y = ?"}`, { x: 0.3, y: 5.0, w: 4.3, h: 0.35, fontSize: 11, bold: true, color: accent, fontFace: "Calibri", align: "center" });
+  } else {
+    // S1: Image placeholder
+    sld.addShape(pres.ShapeType.rect, { x: 0.3, y: 1.0, w: 4.3, h: 4.8, fill: { color: PAL.cardGray } });
+    sld.addText(d.image_description || "🖼 Lesson Image\n(Add from your PPTX)", {
+      x: 0.3, y: 2.5, w: 4.3, h: 1.5,
+      fontSize: 12, color: PAL.muted, fontFace: "Calibri", align: "center", valign: "middle"
+    });
+    sld.addText("What do you notice? What do you wonder?", {
+      x: 0.3, y: 5.5, w: 4.3, h: 0.35,
+      fontSize: 10, italic: true, color: PAL.muted, fontFace: "Calibri", align: "center"
+    });
+  }
+
+  // NOTICE box
+  sld.addShape(pres.ShapeType.rect, { x: 4.8, y: 1.0, w: 4.9, h: 2.25, fill: { color: PAL.cardCream }, line: { color: PAL.gold, pt: 1.5 } });
+  sld.addText("👀 NOTICE", { x: 4.85, y: 1.05, w: 4.8, h: 0.3, fontSize: 11, bold: true, color: PAL.gold, fontFace: "Calibri" });
+  const notices = d.notice_starters || ["I notice that ___ and ___.", "I notice the ___ increases when ___."];
+  notices.forEach((s, i) => {
+    sld.addText(s, { x: 4.9, y: 1.4 + i * 0.7, w: 4.7, h: 0.55, fontSize: 11, color: PAL.body, fontFace: "Calibri", wrap: true });
+  });
+
+  // WONDER box
+  sld.addShape(pres.ShapeType.rect, { x: 4.8, y: 3.35, w: 4.9, h: 2.45, fill: { color: accentLight }, line: { color: accent, pt: 1.5 } });
+  sld.addText("🤔 WONDER", { x: 4.85, y: 3.4, w: 4.8, h: 0.3, fontSize: 11, bold: true, color: accent, fontFace: "Calibri" });
+  const wonders = d.wonder_starters || ["I wonder if ___ because ___.", "What would happen if ___ changed to ___?"];
+  wonders.forEach((s, i) => {
+    sld.addText(s, { x: 4.9, y: 3.75 + i * 0.7, w: 4.7, h: 0.55, fontSize: 11, color: PAL.body, fontFace: "Calibri", wrap: true });
+  });
+
+  // TWR strip
+  const twrStrips = d.twr_strip || ["The ___ depends on ___ because ___.","As ___ increases, ___ increases."];
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 6.0, w: "100%", h: 0.7, fill: { color: PAL.navy } });
+  sld.addText("✏️ TWR: " + twrStrips.join("  |  "), {
+    x: 0.3, y: 6.05, w: 9.4, h: 0.55,
+    fontSize: 10, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle", wrap: true
+  });
+
+  // Mindset
+  sld.addText(d.mindset_goal || "Today I will think like a mathematician.", {
+    x: 0.3, y: 5.75, w: 9.4, h: 0.25,
+    fontSize: 9, italic: true, color: PAL.muted, fontFace: "Calibri", align: "center"
+  });
+}
+
+function renderVocab(sld, pres, d, accent, accentLight) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: accent } });
+  sld.addText("VOCABULARY", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  const terms = d.terms || [];
+  const cols = terms.length > 4 ? 2 : 1;
+  const itemsPerCol = Math.ceil(terms.length / cols);
+  const cardW = cols === 2 ? 4.5 : 9.4;
+  const cardH = 0.95;
+  const startY = 1.1;
+  const gap = 0.12;
+
+  terms.forEach((t, i) => {
+    const col = cols === 2 ? Math.floor(i / itemsPerCol) : 0;
+    const row = i % itemsPerCol;
+    const x = 0.3 + col * 4.9;
+    const y = startY + row * (cardH + gap);
+    const fill = [PAL.cardCream, PAL.cardBlue, PAL.cardSage, PAL.cardGray, PAL.cardRust][i % 5];
+
+    sld.addShape(pres.ShapeType.rect, { x, y, w: cardW, h: cardH, fill: { color: fill }, line: { color: PAL.border, pt: 0.5 } });
+    sld.addText(t.term || "term", { x: x + 0.15, y: y + 0.04, w: cardW - 0.3, h: 0.3, fontSize: 12, bold: true, color: accent, fontFace: "Calibri" });
+    sld.addText(t.definition || "", { x: x + 0.15, y: y + 0.32, w: cardW * 0.65, h: 0.35, fontSize: 10.5, color: PAL.body, fontFace: "Calibri", wrap: true });
+    if (t.spanish) sld.addText(`🇪🇸 ${t.spanish}`, { x: x + cardW * 0.65, y: y + 0.32, w: cardW * 0.32, h: 0.35, fontSize: 10, color: PAL.muted, fontFace: "Calibri", italic: true });
+    if (t.example) sld.addText(`Ex: ${t.example}`, { x: x + 0.15, y: y + 0.65, w: cardW - 0.3, h: 0.25, fontSize: 9.5, color: PAL.muted, fontFace: "Calibri", italic: true });
+  });
+}
+
+function renderGuided(sld, pres, d, accent, accentLight) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: accent } });
+  sld.addText("GUIDED PRACTICE", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  // Scenario card
+  sld.addShape(pres.ShapeType.rect, { x: 0.3, y: 1.05, w: 9.4, h: 0.7, fill: { color: PAL.cardCream }, line: { color: PAL.gold, pt: 1.5 } });
+  sld.addText("📋 " + (d.scenario_card || "Complete the table and equation for this scenario."), {
+    x: 0.5, y: 1.08, w: 9.0, h: 0.6, fontSize: 11.5, color: PAL.body, fontFace: "Calibri", valign: "middle", wrap: true
+  });
+
+  // Table (left)
+  const headers = d.table_headers || ["x","y"];
+  const rows = d.table_rows || [];
+  const tW = 3.8, tX = 0.3, tY = 1.85;
+  const colW = tW / 2;
+
+  sld.addShape(pres.ShapeType.rect, { x: tX, y: tY, w: colW, h: 0.38, fill: { color: accent } });
+  sld.addShape(pres.ShapeType.rect, { x: tX + colW, y: tY, w: colW, h: 0.38, fill: { color: accent } });
+  sld.addText(headers[0], { x: tX, y: tY, w: colW, h: 0.38, fontSize: 11, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+  sld.addText(headers[1], { x: tX + colW, y: tY, w: colW, h: 0.38, fontSize: 11, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  rows.slice(0,6).forEach((row, i) => {
+    const ry = tY + 0.38 + i * 0.42;
+    const fill = i % 2 === 0 ? PAL.cardCream : "FFFFFF";
+    sld.addShape(pres.ShapeType.rect, { x: tX, y: ry, w: colW, h: 0.42, fill: { color: fill }, line: { color: PAL.border, pt: 0.5 } });
+    sld.addShape(pres.ShapeType.rect, { x: tX + colW, y: ry, w: colW, h: 0.42, fill: { color: fill }, line: { color: PAL.border, pt: 0.5 } });
+    sld.addText(String(row[0]), { x: tX, y: ry, w: colW, h: 0.42, fontSize: 12, bold: true, color: PAL.navy, fontFace: "Calibri", align: "center", valign: "middle" });
+    sld.addText(String(row[1]), { x: tX + colW, y: ry, w: colW, h: 0.42, fontSize: 12, color: PAL.body, fontFace: "Calibri", align: "center", valign: "middle" });
+  });
+
+  // Coordinate grid (right)
+  drawCoordGrid(sld, pres, {
+    x: 4.3, y: 1.85, w: 5.2, h: 4.0,
+    xmax: d.graph_xmax || 12,
+    ymax: d.graph_ymax || 100,
+    xlabel: d.graph_xlabel || "x",
+    ylabel: d.graph_ylabel || "y",
+    accent,
+    plotPoints: d.plot_points || []
+  });
+
+  // Equation scaffold
+  const eqY = tY + 0.38 + rows.length * 0.42 + 0.15;
+  sld.addShape(pres.ShapeType.rect, { x: 0.3, y: Math.min(eqY, 5.7), w: 3.8, h: 0.55, fill: { color: accentLight }, line: { color: accent, pt: 1 } });
+  sld.addText(`Equation: ${d.equation_scaffold || "y = ___ × x"}`, {
+    x: 0.45, y: Math.min(eqY, 5.7), w: 3.65, h: 0.55,
+    fontSize: 12, bold: true, color: accent, fontFace: "Calibri", valign: "middle"
+  });
+
+  // TWR prompt
+  if (d.twr_prompt) {
+    sld.addShape(pres.ShapeType.rect, { x: 0, y: 6.3, w: "100%", h: 0.5, fill: { color: PAL.navy } });
+    sld.addText("✏️ " + d.twr_prompt, {
+      x: 0.3, y: 6.3, w: 9.4, h: 0.5, fontSize: 10.5, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle", italic: true
+    });
+  }
+}
+
+function renderCollab(sld, pres, d, accent, accentLight) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: accent } });
+  sld.addText("COLLABORATIVE PRACTICE", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  // Partner A / B cards
+  ["A","B"].forEach((partner, i) => {
+    const x = 0.3 + i * 4.9;
+    sld.addShape(pres.ShapeType.rect, { x, y: 1.05, w: 4.5, h: 0.4, fill: { color: accent } });
+    sld.addText(`Partner ${partner}`, { x, y: 1.05, w: 4.5, h: 0.4, fontSize: 12, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+    const vals = d.partner_values || [];
+    const myVals = partner === "A" ? vals.slice(0, Math.ceil(vals.length/2)) : vals.slice(Math.ceil(vals.length/2));
+
+    sld.addShape(pres.ShapeType.rect, { x, y: 1.45, w: 4.5, h: 2.8, fill: { color: i === 0 ? PAL.cardBlue : PAL.cardCream }, line: { color: PAL.border, pt: 0.5 } });
+
+    sld.addText("Find y for these x values:", { x: x + 0.15, y: 1.55, w: 4.2, h: 0.3, fontSize: 11, color: PAL.muted, fontFace: "Calibri" });
+
+    myVals.slice(0,3).forEach((v, j) => {
+      const vy = 1.9 + j * 0.55;
+      sld.addText(`x = ${v[0]}  →  y = ___`, { x: x + 0.25, y: vy, w: 4.0, h: 0.4, fontSize: 12, color: PAL.body, fontFace: "Calibri" });
+      // write line
+      sld.addShape(pres.ShapeType.line, { x: x + 0.25, y: vy + 0.38, w: 3.5, h: 0, line: { color: PAL.writeLine, pt: 0.9 } });
+    });
+  });
+
+  // Discussion questions
+  sld.addShape(pres.ShapeType.rect, { x: 0.3, y: 4.4, w: 9.4, h: 0.35, fill: { color: PAL.navy } });
+  sld.addText("DISCUSS WITH YOUR PARTNER", { x: 0.3, y: 4.4, w: 9.4, h: 0.35, fontSize: 10, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  [d.discussion_q1, d.discussion_q2].filter(Boolean).forEach((q, i) => {
+    sld.addShape(pres.ShapeType.rect, { x: 0.3, y: 4.8 + i * 0.7, w: 9.4, h: 0.6, fill: { color: i === 0 ? PAL.cardSage : PAL.cardCream }, line: { color: PAL.border, pt: 0.5 } });
+    sld.addText(`${i+1}. ${q}`, { x: 0.5, y: 4.82 + i * 0.7, w: 9.1, h: 0.55, fontSize: 11, color: PAL.body, fontFace: "Calibri", valign: "middle", wrap: true });
+  });
+
+  if (d.twr_prompt) {
+    sld.addShape(pres.ShapeType.rect, { x: 0, y: 6.3, w: "100%", h: 0.5, fill: { color: PAL.navy } });
+    sld.addText("✏️ " + d.twr_prompt, { x: 0.3, y: 6.3, w: 9.4, h: 0.5, fontSize: 10.5, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle", italic: true });
+  }
+}
+
+function renderIndependent(sld, pres, d, accent, accentLight) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: accent } });
+  sld.addText("INDEPENDENT PRACTICE", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  const problems = [
+    { num: 1, stem: d.p1_stem, frame: null, work: d.p1_work },
+    { num: 2, stem: d.p2_stem, frame: null, work: d.p2_work },
+    { num: 3, stem: d.p3_stem, frame: d.p3_frame, work: null }
+  ];
+
+  const positions = [
+    { x: 0.3, y: 1.05, w: 4.5, h: 2.5 },
+    { x: 5.2, y: 1.05, w: 4.5, h: 2.5 },
+    { x: 0.3, y: 3.7, w: 9.4, h: 2.5 }
+  ];
+
+  problems.forEach((p, i) => {
+    if (!p.stem) return;
+    const pos = positions[i];
+    const fills = [PAL.cardBlue, PAL.cardCream, PAL.cardSage];
+    sld.addShape(pres.ShapeType.rect, { ...pos, fill: { color: fills[i] }, line: { color: PAL.border, pt: 0.5 } });
+    sld.addShape(pres.ShapeType.rect, { x: pos.x, y: pos.y, w: 0.38, h: 0.38, fill: { color: accent } });
+    sld.addText(String(p.num), { x: pos.x, y: pos.y, w: 0.38, h: 0.38, fontSize: 12, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+    sld.addText(p.stem, { x: pos.x + 0.45, y: pos.y + 0.04, w: pos.w - 0.55, h: 0.55, fontSize: 11, color: PAL.body, fontFace: "Calibri", wrap: true });
+    // Work lines
+    for (let l = 0; l < 3; l++) {
+      const ly = pos.y + 0.7 + l * 0.45;
+      sld.addShape(pres.ShapeType.line, { x: pos.x + 0.2, y: ly, w: pos.w - 0.4, h: 0, line: { color: PAL.writeLine, pt: 0.9 } });
+    }
+    if (p.frame) {
+      sld.addText(`✏️ ${p.frame}`, { x: pos.x + 0.1, y: pos.y + pos.h - 0.7, w: pos.w - 0.2, h: 0.6, fontSize: 10, color: accent, fontFace: "Calibri", italic: true, wrap: true });
+    }
+  });
+}
+
+function renderCutSort(sld, pres, d, accent, accentLight, isS2) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: accent } });
+  sld.addText("CUT & SORT", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  const cats = d.categories || ["Category A","Category B"];
+  const cards = d.cards || [];
+
+  // Category headers
+  const catFills = [PAL.cardBlue, PAL.cardCream];
+  cats.forEach((cat, i) => {
+    const x = 0.3 + i * 4.9;
+    sld.addShape(pres.ShapeType.rect, { x, y: 1.1, w: 4.4, h: 0.42, fill: { color: accent } });
+    sld.addText(cat, { x, y: 1.1, w: 4.4, h: 0.42, fontSize: 12, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+    sld.addShape(pres.ShapeType.rect, { x, y: 1.52, w: 4.4, h: 3.8, fill: { color: catFills[i] }, line: { color: PAL.border, pt: 0.5 } });
+    sld.addText("(Place cards here)", { x, y: 3.2, w: 4.4, h: 0.4, fontSize: 10, color: PAL.border, fontFace: "Calibri", align: "center", italic: true });
+  });
+
+  // Cards to cut
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 5.45, w: "100%", h: 0.3, fill: { color: PAL.navy } });
+  sld.addText("✂ CUT these cards and sort them above", { x: 0.3, y: 5.45, w: 9.4, h: 0.3, fontSize: 10, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  cards.slice(0,6).forEach((card, i) => {
+    const col = i % 3;
+    const row = Math.floor(i / 3);
+    const cardX = 0.3 + col * 3.2;
+    const cardY = 5.82 + row * 0.62;
+    const fillColors = [PAL.cardCream, PAL.cardSage, PAL.cardBlue];
+    sld.addShape(pres.ShapeType.rect, {
+      x: cardX, y: cardY, w: 3.0, h: 0.52,
+      fill: { color: fillColors[col] },
+      line: { color: PAL.border, pt: 0.5 },
+      shadow: { type: "outer", color: "888888", blur: 3, offset: 1, angle: 45 }
+    });
+    sld.addText(card.text || "", { x: cardX + 0.1, y: cardY + 0.04, w: 2.8, h: 0.44, fontSize: 10.5, color: PAL.body, fontFace: "Calibri", align: "center", valign: "middle", wrap: true });
+  });
+}
+
+function renderTWR(sld, pres, d, accent, accentLight) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: accent } });
+  sld.addText("THINK · WRITE · RESPOND", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  const frames = d.frames || [];
+  const frameH = frames.length <= 4 ? 1.4 : 1.1;
+  const startY = 1.1;
+  const fills = [PAL.cardBlue, PAL.cardCream, PAL.cardSage, PAL.cardGray];
+
+  frames.forEach((f, i) => {
+    const y = startY + i * (frameH + 0.1);
+    sld.addShape(pres.ShapeType.rect, { x: 0.3, y, w: 9.4, h: frameH, fill: { color: fills[i % 4] }, line: { color: PAL.border, pt: 0.5 } });
+    sld.addShape(pres.ShapeType.rect, { x: 0.3, y, w: 1.2, h: frameH, fill: { color: accent } });
+    sld.addText(f.label || `Frame ${i+1}`, { x: 0.3, y, w: 1.2, h: frameH, fontSize: 10, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+    sld.addText(f.stem || "", { x: 1.6, y: y + 0.08, w: 7.9, h: 0.45, fontSize: 11.5, color: PAL.body, fontFace: "Calibri", italic: true, wrap: true });
+    // Write line
+    sld.addShape(pres.ShapeType.line, { x: 1.6, y: y + frameH - 0.3, w: 7.7, h: 0, line: { color: PAL.writeLine, pt: 0.9 } });
+    if (frameH > 1.1) sld.addShape(pres.ShapeType.line, { x: 1.6, y: y + frameH - 0.7, w: 7.7, h: 0, line: { color: PAL.writeLine, pt: 0.9 } });
+  });
+}
+
+function renderExitTicket(sld, pres, d, accent, accentLight) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: PAL.rust } });
+  sld.addText("EXIT TICKET", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  const tiers = [
+    { label: "Tier 1 ★", data: d.tier1, fill: PAL.cardBlue, color: PAL.teal },
+    { label: "Tier 2 ★★", data: d.tier2, fill: PAL.cardCream, color: PAL.gold },
+    { label: "Tier 3 ★★★", data: d.tier3, fill: PAL.cardSage, color: PAL.sage }
+  ];
+
+  const tierH = 1.65;
+  tiers.forEach((t, i) => {
+    const y = 1.1 + i * (tierH + 0.1);
+    sld.addShape(pres.ShapeType.rect, { x: 0.3, y, w: 9.4, h: tierH, fill: { color: t.fill }, line: { color: PAL.border, pt: 0.5 } });
+    sld.addShape(pres.ShapeType.rect, { x: 0.3, y, w: 1.4, h: 0.38, fill: { color: t.color } });
+    sld.addText(t.label, { x: 0.3, y, w: 1.4, h: 0.38, fontSize: 10, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+    sld.addText((t.data?.stem || ""), { x: 0.5, y: y + 0.08, w: 8.8, h: 0.55, fontSize: 11, color: PAL.body, fontFace: "Calibri", wrap: true });
+    // Write lines
+    for (let l = 0; l < 2; l++) {
+      sld.addShape(pres.ShapeType.line, { x: 0.5, y: y + 0.72 + l * 0.38, w: 9.0, h: 0, line: { color: PAL.writeLine, pt: 0.9 } });
+    }
+  });
+}
+
+function renderGoalTracker(sld, pres, d, accent, accentLight) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: accent } });
+  sld.addText("GOAL TRACKER", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  // Objective
+  sld.addShape(pres.ShapeType.rect, { x: 0.3, y: 1.1, w: 9.4, h: 0.65, fill: { color: PAL.cardCream }, line: { color: PAL.gold, pt: 1.5 } });
+  sld.addText("🎯 " + (d.objective || "I can achieve the learning objective."), {
+    x: 0.5, y: 1.1, w: 9.1, h: 0.65, fontSize: 12.5, bold: true, color: PAL.navy, fontFace: "Calibri", valign: "middle", wrap: true
+  });
+
+  // Level cards
+  const levels = d.levels || [
+    {num:1,label:"Not Yet",desc:"I need more help."},
+    {num:2,label:"Getting There",desc:"I can do it with help."},
+    {num:3,label:"Got It",desc:"I can do it alone."},
+    {num:4,label:"I Can Teach It",desc:"I can explain it to others."}
+  ];
+  const fills = [PAL.cardRust, PAL.cardCream, PAL.cardBlue, PAL.cardSage];
+
+  levels.forEach((lv, i) => {
+    const x = 0.3 + i * 2.4;
+    sld.addShape(pres.ShapeType.rect, { x, y: 1.9, w: 2.2, h: 3.8, fill: { color: fills[i] }, line: { color: PAL.border, pt: 0.5 } });
+    // Number badge
+    sld.addShape(pres.ShapeType.ellipse, { x: x + 0.7, y: 2.0, w: 0.8, h: 0.8, fill: { color: accent } });
+    sld.addText(String(lv.num), { x: x + 0.7, y: 2.0, w: 0.8, h: 0.8, fontSize: 20, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+    sld.addText(lv.label, { x, y: 2.9, w: 2.2, h: 0.4, fontSize: 11, bold: true, color: PAL.navy, fontFace: "Calibri", align: "center" });
+    sld.addText(lv.desc, { x: x + 0.1, y: 3.35, w: 2.0, h: 0.8, fontSize: 10, color: PAL.body, fontFace: "Calibri", align: "center", wrap: true });
+    // Checkbox
+    sld.addText("☐ Check here", { x: x + 0.2, y: 5.3, w: 1.8, h: 0.3, fontSize: 9, color: PAL.muted, fontFace: "Calibri", align: "center" });
+  });
+
+  sld.addText("Circle your level: Before the lesson → After the lesson", {
+    x: 0.3, y: 5.85, w: 9.4, h: 0.3, fontSize: 10, color: PAL.muted, fontFace: "Calibri", align: "center", italic: true
+  });
+}
+
+function renderReflection(sld, pres, d, accent, accentLight) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: accent } });
+  sld.addText("SESSION REFLECTION", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  const prompts = d.prompts || [
+    { label: "Session 1 Connection", stem: "In Session 1 we learned ___. Today we extended that by ___.", lines: 3 },
+    { label: "Equation Comparison", stem: "The Session 1 equation was ___. The Session 2 equation is ___. They are different because ___.", lines: 3 },
+    { label: "Biggest Takeaway", stem: "The most important thing I learned in both sessions is ___.", lines: 2 },
+    { label: "Still Wondering", stem: "I still have a question about ___.", lines: 2 }
+  ];
+
+  prompts.forEach((p, i) => {
+    const y = 1.1 + i * 1.5;
+    const fills = [PAL.cardBlue, PAL.cardCream, PAL.cardSage, PAL.cardGray];
+    sld.addShape(pres.ShapeType.rect, { x: 0.3, y, w: 9.4, h: 1.35, fill: { color: fills[i % 4] }, line: { color: PAL.border, pt: 0.5 } });
+    sld.addShape(pres.ShapeType.rect, { x: 0.3, y, w: 2.2, h: 0.35, fill: { color: accent } });
+    sld.addText(p.label, { x: 0.35, y, w: 2.15, h: 0.35, fontSize: 9.5, bold: true, color: "FFFFFF", fontFace: "Calibri", valign: "middle" });
+    sld.addText(p.stem, { x: 0.5, y: y + 0.38, w: 9.0, h: 0.38, fontSize: 11, color: PAL.body, fontFace: "Calibri", italic: true, wrap: true });
+    for (let l = 0; l < p.lines; l++) {
+      sld.addShape(pres.ShapeType.line, { x: 0.5, y: y + 0.82 + l * 0.3, w: 9.0, h: 0, line: { color: PAL.writeLine, pt: 0.9 } });
+    }
+  });
+}
+
+function renderGraphingExtension(sld, pres, d, accent, accentLight) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: accent } });
+  sld.addText("GRAPHING EXTENSION", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  sld.addShape(pres.ShapeType.rect, { x: 0.3, y: 1.05, w: 9.4, h: 0.6, fill: { color: PAL.cardCream }, line: { color: PAL.gold, pt: 1 } });
+  sld.addText(d.prompt || "Plot the points and describe the pattern you see in the graph.", {
+    x: 0.5, y: 1.08, w: 9.0, h: 0.54, fontSize: 11, color: PAL.body, fontFace: "Calibri", valign: "middle", wrap: true
+  });
+
+  drawCoordGrid(sld, pres, {
+    x: 0.5, y: 1.75, w: 9.0, h: 4.5,
+    xmax: d.graph_xmax || 12,
+    ymax: d.graph_ymax || 100,
+    xlabel: d.graph_xlabel || "x",
+    ylabel: d.graph_ylabel || "y",
+    accent,
+    plotPoints: d.plot_points || []
+  });
+}
+
+function renderErrorAnalysis(sld, pres, d, accent, accentLight) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: PAL.rust } });
+  sld.addText("ERROR ANALYSIS", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+
+  const errors = d.errors || [
+    { label: "Student Work", work: "y = x + 45", mistake: "Added instead of multiplied", fix: "y = 45x because the cost multiplies by the rate." },
+    { label: "Student Work", work: "The independent variable is total cost.", mistake: "Reversed the variables", fix: "Total cost DEPENDS on tickets — so it's the dependent variable." }
+  ];
+
+  errors.forEach((e, i) => {
+    const y = 1.1 + i * 2.8;
+    sld.addShape(pres.ShapeType.rect, { x: 0.3, y, w: 9.4, h: 2.6, fill: { color: i % 2 === 0 ? PAL.cardRust : PAL.cardCream }, line: { color: PAL.border, pt: 0.5 } });
+    sld.addText(`❌ ${e.label}:`, { x: 0.5, y: y + 0.08, w: 2, h: 0.3, fontSize: 10, bold: true, color: PAL.rust, fontFace: "Calibri" });
+    sld.addText(e.work, { x: 2.6, y: y + 0.08, w: 7.0, h: 0.3, fontSize: 12, bold: true, color: PAL.body, fontFace: "Calibri" });
+    sld.addText(`What is the mistake?`, { x: 0.5, y: y + 0.45, w: 9.0, h: 0.28, fontSize: 10, color: PAL.muted, fontFace: "Calibri" });
+    sld.addShape(pres.ShapeType.line, { x: 0.5, y: y + 0.82, w: 9.0, h: 0, line: { color: PAL.writeLine, pt: 0.9 } });
+    sld.addText(`✓ Fix it: ${e.fix}`, { x: 0.5, y: y + 0.95, w: 9.0, h: 0.55, fontSize: 10.5, color: PAL.sage, fontFace: "Calibri", italic: true, wrap: true });
+    sld.addShape(pres.ShapeType.line, { x: 0.5, y: y + 1.6, w: 9.0, h: 0, line: { color: PAL.writeLine, pt: 0.9 } });
+    sld.addShape(pres.ShapeType.line, { x: 0.5, y: y + 2.0, w: 9.0, h: 0, line: { color: PAL.writeLine, pt: 0.9 } });
+  });
+}
+
+function renderGeneric(sld, pres, d, accent) {
+  sld.addShape(pres.ShapeType.rect, { x: 0, y: 0.55, w: "100%", h: 0.45, fill: { color: accent } });
+  sld.addText(d.type?.toUpperCase() || "SLIDE", { x: 0.3, y: 0.55, w: 9.4, h: 0.45, fontSize: 14, bold: true, color: "FFFFFF", fontFace: "Calibri", align: "center", valign: "middle" });
+  sld.addText(JSON.stringify(d, null, 2), {
+    x: 0.3, y: 1.1, w: 9.4, h: 5.5, fontSize: 9, color: PAL.muted, fontFace: "Consolas", wrap: true
+  });
+}
+
+// ─── COORDINATE GRID HELPER ───────────────────────────────────────────────────
+function drawCoordGrid(sld, pres, opts) {
+  const { x, y, w, h, xmax, ymax, xlabel, ylabel, accent, plotPoints = [] } = opts;
+  const padL = 0.65, padB = 0.5, padT = 0.2, padR = 0.15;
+  const plotW = w - padL - padR;
+  const plotH = h - padT - padB;
+  const gridX = x + padL;
+  const gridY = y + padT;
+
+  const xSteps = Math.min(xmax, 12);
+  const ySteps = Math.min(10, Math.ceil(ymax / (ymax <= 10 ? 1 : ymax <= 50 ? 5 : ymax <= 200 ? 20 : ymax <= 500 ? 50 : 100)));
+  const yStep = ymax / ySteps;
+
+  // Background
+  sld.addShape(pres.ShapeType.rect, { x, y, w, h, fill: { color: "FFFFFF" }, line: { color: PAL.border, pt: 0.5 } });
+
+  // Gridlines - horizontal
+  for (let i = 0; i <= ySteps; i++) {
+    const gy = gridY + plotH - (i / ySteps) * plotH;
+    sld.addShape(pres.ShapeType.line, { x: gridX, y: gy, w: plotW, h: 0, line: { color: "E5E7EB", pt: 0.5 } });
+    const val = Math.round(i * yStep);
+    if (i % 2 === 0 || ySteps <= 5) {
+      sld.addText(String(val), { x: gridX - 0.6, y: gy - 0.12, w: 0.55, h: 0.24, fontSize: 8, color: PAL.muted, fontFace: "Calibri", align: "right" });
+    }
+  }
+
+  // Gridlines - vertical
+  for (let i = 0; i <= xSteps; i++) {
+    const gx = gridX + (i / xSteps) * plotW;
+    sld.addShape(pres.ShapeType.line, { x: gx, y: gridY, w: 0, h: plotH, line: { color: "E5E7EB", pt: 0.5 } });
+    if (i % 2 === 0 || xSteps <= 6) {
+      sld.addText(String(Math.round(i * xmax / xSteps)), { x: gx - 0.2, y: gridY + plotH + 0.04, w: 0.4, h: 0.24, fontSize: 8, color: PAL.muted, fontFace: "Calibri", align: "center" });
+    }
+  }
+
+  // Axes
+  sld.addShape(pres.ShapeType.line, { x: gridX, y: gridY, w: 0, h: plotH, line: { color: accent, pt: 1.8 } });
+  sld.addShape(pres.ShapeType.line, { x: gridX, y: gridY + plotH, w: plotW, h: 0, line: { color: accent, pt: 1.8 } });
+
+  // Origin
+  sld.addText("0", { x: gridX - 0.22, y: gridY + plotH, w: 0.2, h: 0.24, fontSize: 8, color: PAL.muted, fontFace: "Calibri", align: "right" });
+
+  // Labels
+  sld.addText(xlabel || "x", { x: gridX + plotW / 2 - 1, y: gridY + plotH + 0.28, w: 2, h: 0.28, fontSize: 10, bold: true, color: PAL.navy, fontFace: "Calibri", align: "center" });
+
+  // Y label (rotated — approximate with vertical text)
+  sld.addText(ylabel || "y", { x: x, y: gridY + plotH / 2 - 0.5, w: 0.5, h: 1.0, fontSize: 10, bold: true, color: PAL.navy, fontFace: "Calibri", align: "center", rotate: 270 });
+
+  // Plot points
+  plotPoints.forEach(pt => {
+    const px = gridX + (pt[0] / xmax) * plotW - 0.08;
+    const py = gridY + plotH - (pt[1] / ymax) * plotH - 0.08;
+    if (px >= gridX - 0.1 && px <= gridX + plotW && py >= gridY - 0.1 && py <= gridY + plotH) {
+      sld.addShape(pres.ShapeType.ellipse, { x: px, y: py, w: 0.16, h: 0.16, fill: { color: accent }, line: { color: "FFFFFF", pt: 0.5 } });
+    }
+  });
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// ══════════════════════════════════════════════════════════
-// EXTRACTION PROMPT
-// ══════════════════════════════════════════════════════════
-const EXTRACT_SYSTEM = `You are a precision data extractor for EduWonderLab. Analyze Reveal Math Grade 6 PPTX slide content.
-RULES: 1. Every value must come directly from the slides. NEVER invent values. 2. If a field is not found, use "[NOT FOUND]". 3. Mark inferred values with "[INFERRED]" appended. 4. Return ONLY valid JSON — no prose, no markdown fences.
-SCHEMA (return exactly this structure):
-{"unit":"","lesson":"","standard":"","standardFull":"","standardGrade5Pre":"","standardGrade7Ext":"","session1":{"context":"","iv_name":"","dv_name":"","iv_symbol":"","dv_symbol":"","rate":"","initialValue":"","equation":"","tableValues":[],"vocabTerms":[],"contentObjective":"","languageObjective":"","slides":{"objectives":"","beCurious":"","guided":"","collaborative":"","independent":"","exitTicket":"","vocabulary":""},"allProblems":[],"revealWorkbookPage":"","keyContextDetails":""},"session2":{"context":"","iv_name":"","dv_name":"","iv_symbol":"","dv_symbol":"","rate":"","initialValue":"","equation":"","tableValues":[],"vocabTerms":[],"contentObjective":"","languageObjective":"","slides":{"objectives":"","beCurious":"","guided":"","collaborative":"","independent":"","exitTicket":"","vocabulary":""},"allProblems":[],"revealWorkbookPage":"","keyContextDetails":""}}`;
+function showResults(unit, lesson, standard, mode, spec) {
+  const card = document.getElementById("resultsCard");
+  card.classList.add("active");
+  document.getElementById("resultsSubtext").textContent = `${unit} · ${lesson} · ${standard} · Generated ${new Date().toLocaleTimeString()}`;
 
-// ══════════════════════════════════════════════════════════
-// EXTRACTION QUALITY GATE
-// ══════════════════════════════════════════════════════════
-const CRITICAL_FIELDS = ['context','iv_name','dv_name','equation'];
+  const grid = document.getElementById("downloadGrid");
+  grid.innerHTML = "";
 
-function assessExtractQuality(ext) {
-  const missing = { s1:[], s2:[] };
-  const inferred = { s1:[], s2:[] };
-  CRITICAL_FIELDS.forEach(k => {
-    const v1 = (ext.session1 && ext.session1[k]) || '';
-    const v2 = (ext.session2 && ext.session2[k]) || '';
-    if (!v1 || v1.includes('[NOT FOUND]')) missing.s1.push(k);
-    else if (v1.includes('[INFERRED]')) inferred.s1.push(k);
-    if (!v2 || v2.includes('[NOT FOUND]')) missing.s2.push(k);
-    else if (v2.includes('[INFERRED]')) inferred.s2.push(k);
-  });
-  const totalMissing = missing.s1.length + missing.s2.length;
-  return {
-    blocked: totalMissing >= 4,
-    warned: totalMissing > 0 || (inferred.s1.length + inferred.s2.length) > 0,
-    missing, inferred, totalMissing
-  };
-}
-
-// ══════════════════════════════════════════════════════════
-// REVIEW PANEL
-// ══════════════════════════════════════════════════════════
-const REVIEW_FIELDS = [
-  { key:'context',          label:'Scenario / Context' },
-  { key:'iv_name',          label:'Independent Variable' },
-  { key:'dv_name',          label:'Dependent Variable' },
-  { key:'equation',         label:'Equation' },
-  { key:'rate',             label:'Rate' },
-  { key:'contentObjective', label:'Content Objective' },
-];
-
-function buildReviewPanel(ext) {
-  const gate = assessExtractQuality(ext);
-  const gateEl = document.getElementById('quality-gate-msg');
-  gateEl.style.display = '';
-  if (gate.blocked) {
-    gateEl.className = 'quality-gate gate-block';
-    gateEl.textContent = '⛔ ' + gate.totalMissing + ' critical field(s) not found. Fill them in below before generating.';
-  } else if (gate.warned) {
-    gateEl.className = 'quality-gate gate-warn';
-    gateEl.textContent = '⚠ Some fields were inferred or missing. Review and correct any errors.';
-  } else {
-    gateEl.className = 'quality-gate gate-ok';
-    gateEl.textContent = '✓ All critical fields extracted. Review and confirm.';
+  if (mode !== "s2" && state.s1Blob) {
+    grid.innerHTML += `
+      <div class="download-item">
+        <div class="download-session s1">SESSION 1</div>
+        <div class="download-name">${unit} ${lesson} — Student Notebook S1</div>
+        <div class="download-meta">${spec.session1?.slide_count || 10} slides · Navy + Teal</div>
+        <button class="download-btn s1" onclick="reDownload('s1','${unit.replace(/\s/g,"-")}-${lesson.replace(/\s/g,"-")}-S1-Notebook.pptx')">⬇ Download S1</button>
+      </div>`;
   }
-  buildSessionGrid('review-grid-s1', ext.session1, 's1', gate);
-  buildSessionGrid('review-grid-s2', ext.session2, 's2', gate);
-  document.getElementById('confirm-btn').disabled = gate.blocked;
-}
-
-function buildSessionGrid(containerId, sess, prefix, gate) {
-  const grid = document.getElementById(containerId);
-  while (grid.firstChild) grid.removeChild(grid.firstChild);
-  REVIEW_FIELDS.forEach(f => {
-    const rawVal = (sess && sess[f.key]) || '';
-    const isMissing  = !rawVal || rawVal.includes('[NOT FOUND]');
-    const isInferred = rawVal.includes('[INFERRED]');
-    const displayVal = rawVal.replace(/\[NOT FOUND\]|\[INFERRED\]/g, '').trim();
-    const wrap = document.createElement('div');
-    wrap.className = 'review-field';
-    const lbl = document.createElement('div');
-    lbl.className = 'review-field-label';
-    lbl.textContent = f.label;
-    const inp = document.createElement('input');
-    inp.type = 'text';
-    inp.id = 'rv_' + prefix + '_' + f.key;
-    inp.value = displayVal;
-    inp.placeholder = isMissing ? '[Enter value from slides]' : '';
-    if (isMissing)  inp.classList.add('err-field');
-    if (isInferred) inp.style.borderColor = 'var(--warn)';
-    inp.addEventListener('input', function() {
-      if (this.value.trim()) this.classList.remove('err-field');
-      recheckConfirmButton();
-    });
-    wrap.append(lbl, inp);
-    grid.appendChild(wrap);
-  });
-
-  if (sess && sess.tableValues && sess.tableValues.length) {
-    const wrap = document.createElement('div');
-    wrap.className = 'review-field';
-    const lbl = document.createElement('div');
-    lbl.className = 'review-field-label';
-    lbl.textContent = 'Table Values (IV → DV)';
-    const val = document.createElement('div');
-    val.style.fontFamily = 'monospace';
-    val.style.fontSize = '11px';
-    val.style.padding = '6px 0';
-    val.textContent = sess.tableValues.slice(0, 6)
-      .map(r => Array.isArray(r) ? r.join(' → ') : r).join('  |  ');
-    wrap.append(lbl, val);
-    grid.appendChild(wrap);
+  if (mode !== "s1" && state.s2Blob) {
+    grid.innerHTML += `
+      <div class="download-item">
+        <div class="download-session s2">SESSION 2</div>
+        <div class="download-name">${unit} ${lesson} — Student Notebook S2</div>
+        <div class="download-meta">${spec.session2?.slide_count || 11} slides · Purple + Teal</div>
+        <button class="download-btn s2" onclick="reDownload('s2','${unit.replace(/\s/g,"-")}-${lesson.replace(/\s/g,"-")}-S2-Notebook.pptx')">⬇ Download S2</button>
+      </div>`;
   }
 }
 
-function recheckConfirmButton() {
-  const allInputs = document.querySelectorAll('#review-grid-s1 input, #review-grid-s2 input');
-  document.getElementById('confirm-btn').disabled =
-    Array.from(allInputs).some(i => !i.value.trim());
+function reDownload(session, filename) {
+  const blob = session === "s1" ? state.s1Blob : state.s2Blob;
+  if (blob) triggerDownload(blob, filename);
 }
 
-// Reads editable review fields back into the extract object
-function readReviewValues(ext) {
-  const merged = JSON.parse(JSON.stringify(ext));
-  ['s1', 's2'].forEach(function(prefix) {
-    const sess = prefix === 's1' ? merged.session1 : merged.session2;
-    REVIEW_FIELDS.forEach(function(f) {
-      const inp = document.getElementById('rv_' + prefix + '_' + f.key);
-      if (inp) sess[f.key] = inp.value.trim();
-    });
-  });
-  return merged;
+function restart() {
+  state.fileData = null; state.fileName = null; state.extract = null;
+  state.contentSpec = null; state.s1Blob = null; state.s2Blob = null;
+  document.getElementById("uploadZone").style.display = "block";
+  document.getElementById("fileLoaded").style.display = "none";
+  document.getElementById("fileInput").value = "";
+  document.getElementById("progressCard").classList.remove("active");
+  document.getElementById("resultsCard").classList.remove("active");
+  document.getElementById("logBox").innerHTML = "";
+  document.getElementById("extractPreview").style.display = "none";
+  document.getElementById("progressBar").style.width = "0%";
+  document.getElementById("generateBtn").disabled = true;
 }
 
-// ══════════════════════════════════════════════════════════
-// LP GENERATION PROMPT
-// ══════════════════════════════════════════════════════════
-function buildLPPrompt(session, extract, s1Summary) {
-  if (!s1Summary) s1Summary = '';
-  const blk = State.blockLength || '90';
-  const s = session === 1 ? extract.session1 : extract.session2;
-  const phases = blk === '90'
-    ? 'Ph.1 Warm-Up (8min)|Ph.2 Launch (7min)|Ph.3 Be Curious (10min)|Ph.4 Guided Practice (15min)|Ph.5 Collaborative Practice (15min)|Ph.6 Independent Practice (12min)|Ph.7 Closing (8min)|Ph.8 Exit Ticket (15min)'
-    : 'Ph.1 Warm-Up+Launch (5min)|Ph.2 Be Curious (8min)|Ph.3 Guided Practice (12min)|Ph.4 Independent+Partner Check (12min)|Ph.5 Exit Ticket (5min, Tier 1 only)';
-
-  const s2rules = session === 2
-    ? '\nSESSION 2 RULES:\n- DO NOW labeled "Review from Session 1." Reference "' + (extract.session1 && extract.session1.context) + '" by name + one TWR stem.\n- Misconceptions row 1 or 2: carryover error from S1.\n- Exit Ticket Tier 3: references BOTH sessions by name.\n- ≥2 Formative Check entries compare S2 to S1.\nS1 REFERENCE: ' + s1Summary
-    : '';
-
-  return 'Generate a COMPLETE, zero-placeholder, deployment-ready Grade 6 Math lesson plan.\n' +
-    'Header: Neft.Alba | Date: ' + State.dateStr + (State.unitLesson ? ' | ' + State.unitLesson : '') + ' | Session ' + session + ' | ' + blk + '-min block | Standard: ' + extract.standard + '\n\n' +
-    'SOURCE DATA (verbatim from slides):\n' +
-    'Scenario: ' + s.context + '\n' +
-    'IV: ' + s.iv_name + ' (' + s.iv_symbol + ') | DV: ' + s.dv_name + ' (' + s.dv_symbol + ')\n' +
-    'Rate: ' + s.rate + ' | Initial value: ' + (s.initialValue || '0') + ' | Equation: ' + s.equation + '\n' +
-    'Table: ' + JSON.stringify(s.tableValues) + '\n' +
-    'Vocab: ' + ((s.vocabTerms || []).map(v => v.term || v).join(', ')) + '\n' +
-    'Content Objective: ' + s.contentObjective + '\n' +
-    'Language Objective: ' + s.languageObjective + '\n' +
-    'Slide refs: ' + JSON.stringify(s.slides) + '\n' +
-    'Workbook page: ' + s.revealWorkbookPage + '\n' +
-    s2rules + '\n\n' +
-    'PHASES (' + blk + 'min): ' + phases + '\n\n' +
-    'OUTPUT — EXACTLY THESE 10 SECTIONS IN ORDER (## heading each):\n\n' +
-    '## 1. DO NOW\n3–5 min activator connecting to prior knowledge.' + (session === 2 ? ' Label: "Review from Session 1." Reference S1 scenario by name + TWR stem.' : '') + '\n\n' +
-    '## 2. STANDARDS TABLE\n| Grade 5 Prerequisite | Grade 6 Target Standard | Grade 7 Extension |\nUse: ' + (extract.standardGrade5Pre || '[Grade 5 prereq]') + ' / ' + (extract.standardFull || extract.standard) + ' / ' + (extract.standardGrade7Ext || '[Grade 7 ext]') + '\n\n' +
-    '## 3. OBJECTIVES\nContent Objective (labeled): "I can [verb] **[key term]** by [action]."\nLanguage Objective (labeled, WIDA-aligned): "I will [language function] using [scaffold] to [communicate math]."\nBoth include: ☐ Before | ☐ After\n\n' +
-    '## 4. LESSON PROCEDURES TABLE\n| Phase (Time) | Teacher Moves | Student Moves | SPED Supports | ESOL/WIDA Scaffolds | Formative Check |\n' +
-    'TEACHER MOVES: 3–5 actions/phase. Slide refs inline (Slide N). TEACH: [T3] [T4] [T4★]. Min [T4★] in 2 phases.\n' +
-    'STUDENT MOVES: Observable actions + TWR stem italicized with ___ blanks using actual variable names "' + s.iv_name + '" and "' + s.dv_name + '".\n' +
-    'SPED (each student ≥' + (blk === '90' ? 3 : 2) + ' phases): M.E.→starters/banks/chunking/ext.time | R.B.→graphic org/simplified lang/small group/breaks | J.C.→TTS/verbal/pre-teach | R.M.G.→visual sched/sensory/motor | J.L.→movement/reinforcement/chunking | S.D.L.P.→multi-sensory/manip/calc | A.M.M.→wait time/safe responses/1:1\n' +
-    'ESOL: ALWAYS exactly "L1–2: [task]. L3–4: [task]. L5: [task]." in every phase.\n' +
-    'FORMATIVE CHECK: [T4] monitoring + [T3] probing question. Exit Ticket phase adds "Target: 80%+ [criterion]."\n\n' +
-    '## 5. VOCABULARY TABLE\n| Tier | Term | Student-Friendly Definition | Morphology (root+affix) | EN-ES Cognate ✓/✗ | Cross-Disciplinary Use |\nMin 4 terms from: ' + ((s.vocabTerms || []).map(v => v.term || v).join(', ') || '[extract from slides]') + '\n\n' +
-    '## 6. MISCONCEPTIONS + INTERVENTIONS TABLE\n| # | Student Belief | Cognitive Root | Teacher Corrective Move | Intervention Route |\nMin 4 rows. Intervention Route = specific reteach/slide/IP reference.' + (session === 2 ? ' Row 1 or 2 = carryover from S1.' : '') + '\n\n' +
-    '## 7. SMALL-GROUP STATIONS\n' +
-    'RETEACH (Teacher-Led): All 7 SPED — M.E., R.B., J.C., R.M.G., J.L., S.D.L.P., A.M.M.\n' +
-    '  Guiding Q | Workbook p.' + (s.revealWorkbookPage || '[VERIFY]') + ' [specific problem #s] | Expected artifact + TWR frame\n' +
-    'PRACTICE (Partner A/B): Workbook p.' + (s.revealWorkbookPage || '[VERIFY]') + ' [specific problem #s] | Expected artifact + TWR frame\n' +
-    'ENRICHMENT (Independent): DOK3 extension | Written paragraph + TWR frame\n' +
-    'RULE: Reteach + Practice = Reveal Workbook problems ONLY.\n\n' +
-    '## 8. STUDENT NOTE SHEET\n(NO student initials anywhere in this section.)\n' +
-    'Vocab blanks (4+ terms) | Scenario setup using "' + s.context + '" exact values | Table scaffold (IV/DV headers + first rows pre-filled) | Equation scaffold: ___ = ___ × ___ | TWR prompt using "' + s.iv_name + '" and "' + s.dv_name + '" | Goal tracker 1–4 with anchors\n\n' +
-    '## 9. EXIT TICKET\nAll 3 tiers use scenario "' + s.context + '":\nTier 1: Identify + sentence frame with ___ blanks (' + s.iv_name + '/' + s.dv_name + ')\nTier 2: Identify + explain + TWR 2–3 sentences\nTier 3: Multi-step + contrastive justification' + (session === 2 ? ' + reference both S1 and S2 by name' : '') + '\n\n' +
-    '## 10. GRADE 6 IEP ACCOMMODATIONS MATRIX\n(Initials only — no full names.)\n| Student | Accommodations | Phase Placement in This Lesson |\nAll 7: M.E., R.B., J.C., R.M.G., J.L., S.D.L.P., A.M.M. — full accommodation list + phases.\n\n' +
-    'ABSOLUTE RULES:\n' +
-    '1. Math: equation ' + s.equation + ' must be consistent across all table values and exit ticket numbers. Verify before writing.\n' +
-    '2. No placeholders: zero "TBD", "add here", empty cells, "...".\n' +
-    '3. Source fidelity: all scenario/variable/equation/table values from source data above.\n' +
-    '4. TWR stems use actual variable names — never generic.\n' +
-    '5. [T4★] in Teacher Moves AND Formative Check of same phase, ≥2 phases.\n' +
-    '6. WIDA 3-band: every phase, format "L1–2: … L3–4: … L5: …"\n' +
-    '7. No student initials in sections 8 or 9.\n' +
-    '8. Every section complete — no truncation.\n\n' +
-    'Output complete Markdown. Tables use | pipe | format.';
-}
-
-// ══════════════════════════════════════════════════════════
-// QA VALIDATOR
-// ══════════════════════════════════════════════════════════
-function validateLP(lpText, session, extract) {
-  session = session || 1;
-  const issues = [];
-  const warns  = [];
-
-  const sectionHeaders = REQUIRED_SECTIONS.map(s => ({
-    name: s,
-    found: new RegExp('##\\s+(\\d+\\.\\s+)?' + s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(lpText)
-  }));
-  const missingSec = sectionHeaders.filter(h => !h.found).map(h => h.name);
-  if (missingSec.length) issues.push('Missing sections: ' + missingSec.join(', '));
-
-  const tstarCount = (lpText.match(/\[T4★\]/g) || []).length;
-  if (tstarCount < 2) issues.push('[T4★] found ' + tstarCount + ' time(s) — minimum 2 required.');
-
-  const widaRe = /L1[–\-]2:.{5,}L3[–\-]4:.{5,}L5:/gi;
-  const widaMatches = (lpText.match(widaRe) || []).length;
-  const phaseCount = State.blockLength === '90' ? 8 : 5;
-  if (widaMatches < Math.floor(phaseCount * 0.6))
-    issues.push('WIDA 3-band found ' + widaMatches + ' time(s) — expected ~' + phaseCount + '.');
-
-  const minAppear = State.blockLength === '90' ? 3 : 2;
-  SPED_STUDENTS.forEach(function(s) {
-    const count = (lpText.match(new RegExp(s.replace(/\./g, '\\.'), 'g')) || []).length;
-    if (count < 2) issues.push(s + ' appears ' + count + ' time(s) in SPED supports (min ' + minAppear + ').');
-  });
-
-  const noteIdx = lpText.search(/##\s+\d*\.?\s*STUDENT NOTE SHEET/i);
-  const iepIdx  = lpText.search(/##\s+\d*\.?\s*IEP/i);
-  if (noteIdx > 0 && iepIdx > 0) {
-    const sf = lpText.slice(noteIdx, iepIdx > 0 ? iepIdx : lpText.length);
-    SPED_STUDENTS.forEach(function(s) {
-      if (new RegExp(s.replace(/\./g, '\\.'), 'g').test(sf))
-        issues.push('Student initials "' + s + '" found in student-facing section — must be removed.');
-    });
-  }
-
-  const miscIdx    = lpText.search(/##\s+\d*\.?\s*MISCONCEPTIONS/i);
-  const nextSecIdx = lpText.indexOf('##', miscIdx + 5);
-  if (miscIdx > 0) {
-    const miscBlock = lpText.slice(miscIdx, nextSecIdx > miscIdx ? nextSecIdx : lpText.length);
-    const miscRows  = (miscBlock.match(/\|[^|]+\|[^|]+\|[^|]+\|/g) || []).length - 1;
-    if (miscRows < 4) warns.push('Misconceptions table has ~' + miscRows + ' rows — minimum 4 required.');
-  }
-
-  const placeholderRe = /\b(TBD|TODO|add here|placeholder|\[INSERT\]|FILL IN|COMING SOON)\b|\.{4,}/gi;
-  const placeholders  = lpText.match(placeholderRe) || [];
-  if (placeholders.length)
-    issues.push('Placeholder text found: ' + [...new Set(placeholders)].join(', '));
-
-  if (extract) {
-    const sess = session === 1 ? extract.session1 : extract.session2;
-    if (sess && sess.equation && !sess.equation.includes('[NOT FOUND]')) {
-      const rhs = (sess.equation.split('=')[1] || '').trim();
-      if (rhs && !lpText.includes(rhs))
-        warns.push('Equation "' + sess.equation + '" — verify consistent use throughout.');
-    }
-  }
-
-  return {
-    pass: issues.length === 0,
-    blocked: issues.length > 3,
-    issues, warns,
-    missingSections: missingSec,
-    score: Math.max(0, 100 - issues.length * 15 - warns.length * 5)
-  };
-}
-
-// ══════════════════════════════════════════════════════════
-// DOCX BUILDER
-// ══════════════════════════════════════════════════════════
-function sanitizeXml(s) {
-  return (s || '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
-}
-function escXml(s) {
-  return sanitizeXml(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
-
-function parseInlineRuns(text) {
-  const runs = [];
-  let i = 0, buf = '';
-  while (i < text.length) {
-    if (text[i] === '*' && text[i+1] === '*') {
-      if (buf) runs.push({ t: buf });
-      buf = ''; i += 2;
-      const e = text.indexOf('**', i);
-      runs.push({ t: text.slice(i, e === -1 ? text.length : e), bold: true });
-      i = e === -1 ? text.length : e + 2;
-    } else if (text[i] === '`') {
-      if (buf) runs.push({ t: buf });
-      buf = ''; i++;
-      const e = text.indexOf('`', i);
-      runs.push({ t: text.slice(i, e === -1 ? text.length : e), mono: true });
-      i = e === -1 ? text.length : e + 1;
-    } else {
-      buf += text[i++];
-    }
-  }
-  if (buf) runs.push({ t: buf });
-  return runs;
-}
-
-function renderRuns(text, opts) {
-  opts = opts || {};
-  const color = opts.color || '242A30';
-  const sz    = opts.sz    || 20;
-  return parseInlineRuns(text).map(function(r) {
-    let rpr = '<w:color w:val="' + color + '"/><w:sz w:val="' + sz + '"/><w:szCs w:val="' + sz + '"/>';
-    if (r.bold) rpr += '<w:b/>';
-    if (r.mono) rpr += '<w:rFonts w:ascii="Courier New" w:hAnsi="Courier New" w:cs="Courier New"/>';
-    return '<w:r><w:rPr>' + rpr + '</w:rPr><w:t xml:space="preserve">' + escXml(r.t) + '</w:t></w:r>';
-  }).join('');
-}
-
-function wH1(t) { return '<w:p><w:pPr><w:spacing w:before="320" w:after="100"/><w:pBdr><w:bottom w:val="single" w:sz="12" w:space="1" w:color="1C2E42"/></w:pBdr></w:pPr><w:r><w:rPr><w:b/><w:color w:val="1C2E42"/><w:sz w:val="34"/><w:szCs w:val="34"/></w:rPr><w:t xml:space="preserve">' + escXml(t) + '</w:t></w:r></w:p>\n'; }
-function wH2(t) { return '<w:p><w:pPr><w:spacing w:before="220" w:after="80"/><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="387F84"/></w:pBdr></w:pPr><w:r><w:rPr><w:b/><w:color w:val="1C2E42"/><w:sz w:val="26"/><w:szCs w:val="26"/></w:rPr><w:t xml:space="preserve">' + escXml(t) + '</w:t></w:r></w:p>\n'; }
-function wH3(t) { return '<w:p><w:pPr><w:spacing w:before="160" w:after="60"/></w:pPr><w:r><w:rPr><w:b/><w:color w:val="387F84"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t xml:space="preserve">' + escXml(t) + '</w:t></w:r></w:p>\n'; }
-function wPara(inner, after) { after = after || 80; return '<w:p><w:pPr><w:spacing w:after="' + after + '"/></w:pPr>' + inner + '</w:p>\n'; }
-function wEmpty(after) { after = after || 60; return '<w:p><w:pPr><w:spacing w:after="' + after + '"/></w:pPr></w:p>\n'; }
-
-function buildTableXml(rows) {
-  if (!rows.length) return '';
-  const maxCols = Math.max.apply(null, rows.map(r => r.length));
-  const colW    = Math.floor(9100 / Math.max(maxCols, 1));
-  const borders = '<w:tblBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="D6DBDF"/><w:left w:val="single" w:sz="4" w:space="0" w:color="D6DBDF"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="D6DBDF"/><w:right w:val="single" w:sz="4" w:space="0" w:color="D6DBDF"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="D6DBDF"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="D6DBDF"/></w:tblBorders>';
-  const grid    = Array(maxCols).fill('<w:gridCol w:w="' + colW + '"/>').join('');
-  let xml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="9100" w:type="dxa"/><w:tblLayout w:type="fixed"/>' + borders + '<w:tblCellMar><w:top w:w="80" w:type="dxa"/><w:left w:w="110" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="110" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>' + grid + '</w:tblGrid>\n';
-  for (let ri = 0; ri < rows.length; ri++) {
-    const isH  = ri === 0;
-    const fill = isH ? 'EAF2F7' : (ri % 2 === 0 ? 'FFFFFF' : 'F9FAFB');
-    xml += '<w:tr>';
-    if (isH) xml += '<w:trPr><w:tblHeader/></w:trPr>';
-    for (let ci = 0; ci < maxCols; ci++) {
-      const ct   = (rows[ri] && rows[ri][ci]) || '';
-      const runs = isH
-        ? '<w:r><w:rPr><w:b/><w:color w:val="1C2E42"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr><w:t xml:space="preserve">' + escXml(ct) + '</w:t></w:r>'
-        : renderRuns(ct, { color:'242A30', sz:18 });
-      xml += '<w:tc><w:tcPr><w:tcW w:w="' + colW + '" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="' + fill + '"/></w:tcPr><w:p><w:pPr><w:spacing w:after="40"/></w:pPr>' + runs + '</w:p></w:tc>';
-    }
-    xml += '</w:tr>\n';
-  }
-  xml += '</w:tbl>\n';
-  return xml;
-}
-
-function parseMarkdownToDocxXml(md) {
-  const lines = md.split('\n');
-  let xml = '', i = 0;
-  while (i < lines.length) {
-    const line = lines[i];
-    if (line.startsWith('### '))  { xml += wH3(line.slice(4).trim()); i++; continue; }
-    if (line.startsWith('## '))   { xml += wH2(line.slice(3).trim()); i++; continue; }
-    if (line.startsWith('# '))    { xml += wH1(line.slice(2).trim()); i++; continue; }
-    if (line.trimStart().startsWith('|')) {
-      const tLines = [line];
-      i++;
-      while (i < lines.length && lines[i].trimStart().startsWith('|')) { tLines.push(lines[i]); i++; }
-      const rows = tLines
-        .filter(l => !/^\|[\s:|-]+\|$/.test(l.trim()))
-        .map(l => l.split('|').slice(1, -1).map(c => c.trim()));
-      if (rows.length) { xml += buildTableXml(rows); xml += wEmpty(100); }
-      continue;
-    }
-    if (/^[-*]\s/.test(line)) {
-      xml += '<w:p><w:pPr><w:spacing w:after="40"/><w:ind w:left="360" w:hanging="180"/></w:pPr>' + renderRuns(line.slice(2).trim()) + '</w:p>\n';
-      i++;
-      while (i < lines.length && /^[-*]\s/.test(lines[i])) {
-        xml += '<w:p><w:pPr><w:spacing w:after="40"/><w:ind w:left="360" w:hanging="180"/></w:pPr>' + renderRuns(lines[i].slice(2).trim()) + '</w:p>\n';
-        i++;
-      }
-      continue;
-    }
-    if (/^\d+\.\s/.test(line)) {
-      while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
-        xml += '<w:p><w:pPr><w:spacing w:after="40"/><w:ind w:left="360" w:hanging="180"/></w:pPr>' + renderRuns(lines[i].replace(/^\d+\.\s/, '').trim()) + '</w:p>\n';
-        i++;
-      }
-      continue;
-    }
-    if (/^[-=]{3,}$/.test(line.trim())) { xml += wEmpty(120); i++; continue; }
-    if (line.trim() === '') { xml += wEmpty(60); i++; continue; }
-    xml += wPara(renderRuns(line));
-    i++;
-  }
-  return xml;
-}
-
-function buildDocxBlob(markdownContent) {
-  const bodyXml = parseMarkdownToDocxXml(markdownContent);
-  const docXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:document xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">\n<w:body>\n' + bodyXml + '\n<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="900" w:bottom="1080" w:left="900"/></w:sectPr>\n</w:body>\n</w:document>';
-  const stylesXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:color w:val="242A30"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="80"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:styleId="Normal" w:default="1"><w:name w:val="Normal"/><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:color w:val="242A30"/></w:rPr></w:style><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:rPr><w:sz w:val="20"/></w:rPr></w:style></w:styles>';
-  const settingsXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:defaultTabStop w:val="720"/></w:settings>';
-  const zip = new JSZip();
-  zip.file('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/></Types>');
-  zip.file('_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
-  zip.file('word/document.xml', docXml);
-  zip.file('word/styles.xml', stylesXml);
-  zip.file('word/settings.xml', settingsXml);
-  zip.file('word/_rels/document.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/></Relationships>');
-  return zip.generateAsync({
-    type: 'blob',
-    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    compression: 'DEFLATE',
-    compressionOptions: { level: 6 }
-  });
-}
-
-// ══════════════════════════════════════════════════════════
-// PIPELINE ENTRY
-// ══════════════════════════════════════════════════════════
-async function handleGenerate() {
-  clearFieldErr('err-file');
-  clearFieldErr('err-key');
-  let valid = true;
-
-  if (!State.uploadedFile) {
-    showFieldErr('err-file', 'Please upload a .pptx file first.');
-    valid = false;
-  }
-  const key = document.getElementById('api-key').value.trim();
-  if (!key) {
-    showFieldErr('err-key', 'Please enter your Anthropic API key.');
-    valid = false;
-  } else if (!key.startsWith('sk-ant-')) {
-    showFieldErr('err-key', 'Key must start with sk-ant- (got: ' + key.slice(0,8) + '…).');
-    valid = false;
-  }
-  if (!valid) return;
-
-  State.apiKey   = key;
-  State.dateVal  = document.getElementById('lesson-date').value;
-  State.dateStr  = State.dateVal
-    ? new Date(State.dateVal + 'T12:00:00').toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
-    : new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  State.unitLesson = document.getElementById('unit-lesson').value.trim();
-
-  try { sessionStorage.setItem(SS_KEY, key); } catch(_) {}
-  if (document.getElementById('persist-key').checked) {
-    try { localStorage.setItem(LS_KEY, key); } catch(_) {}
-  } else {
-    try { localStorage.removeItem(LS_KEY); } catch(_) {}
-  }
-
-  resetState(true);
-  lockInputs(true);
-
-  // Show progress FIRST before any async work — prevents blank screen on crash
-  showSection('progress');
-
-  const li = document.getElementById('log-inner');
-  while (li && li.firstChild) li.removeChild(li.firstChild);
-  STAGES.forEach(s => setStage(s.id, 'wait'));
-  setProgress(0);
-
-  try {
-    State.currentStage = 'extract';
-    setStage('extract', 'run');
-    log('Reading PPTX…', 'info');
-    const { text: slideText, slideCount } = await extractPptxContent(State.uploadedFile);
-    log(slideCount + ' slides parsed.', 'ok');
-    log('Sending to Claude for structured extraction…', 'info');
-
-    const rawText = await apiCall(
-      EXTRACT_SYSTEM,
-      'PPTX content (' + slideCount + ' slides):\n\n' + slideText + '\n\nReturn JSON only.',
-      4000
-    );
-
-    let ext;
-    try {
-      ext = JSON.parse(rawText.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '').trim());
-    } catch(_) {
-      const m = rawText.match(/\{[\s\S]+\}/);
-      if (m) {
-        try { ext = JSON.parse(m[0]); } catch(e2) {
-          throw new Error('Could not parse extraction JSON. Check PPTX has readable text content.');
-        }
-      } else {
-        throw new Error('Claude did not return valid JSON during extraction.');
-      }
-    }
-
-    State.rawExtract = ext;
-    log('Extracted: ' + (ext.standard || 'standard n/a') + ' — S1:"' + (ext.session1 && ext.session1.context) + '" S2:"' + (ext.session2 && ext.session2.context) + '"', 'ok');
-    setStage('extract', 'ok', slideCount + ' slides');
-    setProgress(1);
-
-    buildReviewPanel(ext);
-    showSection('review');
-    lockInputs(false);
-
-  } catch(e) {
-    lockInputs(false);
-    handlePipelineError(e);
-  }
-}
-
-async function proceedToGeneration() {
-  if (!State.rawExtract) return;
-  const keyVal = document.getElementById('api-key').value.trim();
-  if (keyVal) State.apiKey = keyVal;
-  if (!State.apiKey) { showErr('API key is required. Enter it and retry.'); return; }
-
-  const dv = document.getElementById('lesson-date').value;
-  if (dv) {
-    State.dateVal = dv;
-    State.dateStr = new Date(dv + 'T12:00:00').toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  }
-  if (!State.dateStr)
-    State.dateStr = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-
-  State.unitLesson  = document.getElementById('unit-lesson').value.trim() || State.unitLesson;
-  State.blockLength = (document.querySelector('input[name="block"]:checked') || {}).value || State.blockLength || '90';
-  State.extract     = readReviewValues(State.rawExtract);
-
-  showSection('progress');
-  lockInputs(true);
-  setStage('extract', 'ok');
-  setProgress(1);
-  State.cancelled = false;
-
-  const li = document.getElementById('log-inner');
-  while (li && li.firstChild) li.removeChild(li.firstChild);
-
-  try {
-    State.currentStage = 'generate';
-    setStage('generate', 'run');
-    const ext   = State.extract;
-    const lpsys = 'Generate a complete, deployment-ready Grade 6 Math lesson plan in Markdown only. No preamble, no sign-off — output begins with # header.';
-
-    log('Generating Session 1 lesson plan…', 'info');
-    State.s1Raw = await apiCall(lpsys, buildLPPrompt(1, ext, ''), 8000);
-    if (State.s1Raw.length < 1000)
-      throw new Error('Session 1 response too short (' + State.s1Raw.length + ' chars) — likely truncation. Retry.');
-    log('S1: ' + (State.s1Raw.length / 1024).toFixed(0) + ' KB', 'ok');
-
-    if (State.cancelled) throw new Error('Cancelled');
-
-    const s1Summary = 'S1 scenario:"' + (ext.session1 && ext.session1.context) + '" IV:"' + (ext.session1 && ext.session1.iv_name) + '" DV:"' + (ext.session1 && ext.session1.dv_name) + '" Eq:"' + (ext.session1 && ext.session1.equation) + '" Obj:"' + (ext.session1 && ext.session1.contentObjective) + '"';
-
-    log('Generating Session 2 lesson plan…', 'info');
-    State.s2Raw = await apiCall(lpsys, buildLPPrompt(2, ext, s1Summary), 8000);
-    if (State.s2Raw.length < 1000)
-      throw new Error('Session 2 response too short (' + State.s2Raw.length + ' chars) — likely truncation. Retry.');
-    log('S2: ' + (State.s2Raw.length / 1024).toFixed(0) + ' KB', 'ok');
-
-    // Quick retry if sections missing
-    for (let si = 0; si < 2; si++) {
-      const sess  = si + 1;
-      const raw   = sess === 1 ? State.s1Raw : State.s2Raw;
-      const qr    = validateLP(raw, sess, ext);
-      if (qr.missingSections.length > 2) {
-        log('S' + sess + ' missing sections: ' + qr.missingSections.join(', ') + ' — retrying…', 'warn');
-        const retry = await apiCall(
-          lpsys,
-          buildLPPrompt(sess, ext, sess === 2 ? s1Summary : '') +
-            '\n\nPRIOR ATTEMPT MISSING: ' + qr.missingSections.join(', ') + '. You MUST include ALL 10 sections.',
-          8000
-        );
-        if (sess === 1) State.s1Raw = retry; else State.s2Raw = retry;
-        log('S' + sess + ' retry complete.', 'ok');
-      }
-    }
-    setStage('generate', 'ok');
-    setProgress(2);
-
-    State.currentStage = 'qa';
-    setStage('qa', 'run');
-    log('Running QA audit…', 'info');
-    const qa1 = validateLP(State.s1Raw, 1, ext);
-    const qa2 = validateLP(State.s2Raw, 2, ext);
-    const allIssues = qa1.issues.map(i => 'S1: ' + i).concat(qa2.issues.map(i => 'S2: ' + i));
-    const allWarns  = qa1.warns.map(w => 'S1: ' + w).concat(qa2.warns.map(w => 'S2: ' + w));
-    allIssues.forEach(i => log(i, 'warn'));
-    allWarns.forEach(w => log(w, 'warn'));
-    const qaBlocked = qa1.blocked || qa2.blocked;
-    if (!allIssues.length && !allWarns.length) log('QA: PASS — both plans deployment-ready.', 'ok');
-    setStage('qa', qaBlocked ? 'fail' : 'ok', allIssues.length ? allIssues.length + ' issues' : 'PASS');
-    setProgress(3);
-    if (qaBlocked)
-      throw new Error('QA blocked: ' + allIssues.slice(0,3).join(' | ') + (allIssues.length > 3 ? ' (+' + (allIssues.length-3) + ' more)' : ''));
-
-    State.currentStage = 'docx';
-    setStage('docx', 'run');
-    log('Compiling .docx files…', 'info');
-    if (!State.s1Raw || State.s1Raw.length < 500) throw new Error('Session 1 content missing or too short.');
-    if (!State.s2Raw || State.s2Raw.length < 500) throw new Error('Session 2 content missing or too short.');
-
-    const slug    = ((State.unitLesson || 'Lesson').replace(/[^\w]+/g, '_') || 'Lesson').slice(0, 30);
-    const dateSlug = State.dateVal ? State.dateVal.replace(/-/g, '') : 'date';
-    const [b1, b2] = await Promise.all([buildDocxBlob(State.s1Raw), buildDocxBlob(State.s2Raw)]);
-
-    State.generatedFiles = [
-      { name: 'LP_' + slug + '_S1_' + dateSlug + '_NeftAlba.docx', blob: b1, label: 'Session 1 — Lesson Plan', size: b1.size },
-      { name: 'LP_' + slug + '_S2_' + dateSlug + '_NeftAlba.docx', blob: b2, label: 'Session 2 — Lesson Plan', size: b2.size },
-    ];
-    log('Both .docx files ready.', 'ok');
-    setStage('docx', 'ok');
-    setProgress(4);
-    showResults(allIssues, allWarns);
-
-  } catch(e) {
-    lockInputs(false);
-    handlePipelineError(e);
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// ERROR / RETRY
-// ══════════════════════════════════════════════════════════
-function handlePipelineError(e) {
-  const friendly = e.message.startsWith('Cancelled')
-    ? 'Generation was cancelled.'
-    : e.message.includes('API key') ? e.message
-    : e.message.includes('timed out') ? e.message
-    : 'Something went wrong during the ' + (State.currentStage || 'generation') + ' stage. See details below.';
-  STAGES.forEach(function(s) {
-    const ico = document.getElementById('icon-' + s.id);
-    if (ico && (ico.classList.contains('run') || ico.classList.contains('fail')))
-      setStage(s.id, 'fail');
-  });
-  showErr(friendly, e.stack || e.message, State.cancelled);
-}
-
-async function resumeFromCheckpoint() {
-  document.getElementById('error-section').style.display = 'none';
-  State.cancelled = false;
-  if (State.extract && State.currentStage !== 'extract') {
-    showSection('progress');
-    lockInputs(true);
-    STAGES.forEach(function(s) {
-      const ico = document.getElementById('icon-' + s.id);
-      if (ico && (ico.classList.contains('fail') || ico.classList.contains('run')))
-        setStage(s.id, 'wait');
-    });
-    setProgress(1);
-    const li = document.getElementById('log-inner');
-    if (li) while (li.firstChild) li.removeChild(li.firstChild);
-    log('Resuming from checkpoint after extraction…', 'info');
-    await proceedToGeneration();
-  } else {
-    fullReset();
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// RESULTS
-// ══════════════════════════════════════════════════════════
-function showResults(issues, warns) {
-  issues = issues || [];
-  warns  = warns  || [];
-  showSection('results');
-  lockInputs(false);
-  document.getElementById('results-meta').textContent =
-    (State.unitLesson ? State.unitLesson + ' · ' : '') + State.dateStr + ' · ' + State.blockLength + '-min block';
-
-  const banner = document.getElementById('qa-banner');
-  while (banner.firstChild) banner.removeChild(banner.firstChild);
-  if (!issues.length && !warns.length) {
-    banner.className = 'qa-banner pass';
-    const msg = document.createElement('span');
-    msg.textContent = '✓ All QA checks passed — both lesson plans are deployment-ready.';
-    banner.appendChild(msg);
-  } else {
-    banner.className = issues.length ? 'qa-banner fail' : 'qa-banner warn';
-    const head = document.createElement('strong');
-    head.textContent = issues.length
-      ? issues.length + ' QA issue(s) — review before distributing:'
-      : warns.length + ' warning(s):';
-    banner.appendChild(head);
-    const list = document.createElement('ul');
-    list.className = 'qa-warn-list';
-    issues.slice(0,5).concat(warns.slice(0,3)).forEach(function(txt) {
-      const li = document.createElement('li');
-      li.textContent = txt;
-      list.appendChild(li);
-    });
-    banner.appendChild(list);
-  }
-
-  const dlList = document.getElementById('dl-list');
-  while (dlList.firstChild) dlList.removeChild(dlList.firstChild);
-  State.generatedFiles.forEach(function(f) {
-    const url = URL.createObjectURL(f.blob);
-    State.objectURLs.push(url);
-    const item = document.createElement('div');
-    item.className = 'dl-item';
-    const left = document.createElement('div');
-    left.className = 'dl-left';
-    const ico = document.createElement('div');
-    ico.className = 'dl-file-icon';
-    ico.textContent = '📄';
-    const meta = document.createElement('div');
-    const nm = document.createElement('div');
-    nm.className = 'dl-name';
-    nm.textContent = f.label;
-    const fn = document.createElement('div');
-    fn.className = 'dl-filename';
-    fn.textContent = f.name + ' · ' + (f.size / 1024).toFixed(0) + ' KB';
-    meta.append(nm, fn);
-    left.append(ico, meta);
-    const link = document.createElement('a');
-    link.className = 'dl-btn';
-    link.href = url;
-    link.download = f.name;
-    link.textContent = '↓ Download';
-    item.append(left, link);
-    dlList.appendChild(item);
-  });
-}
-
-// ══════════════════════════════════════════════════════════
-// FULL RESET
-// ══════════════════════════════════════════════════════════
-function fullReset() {
-  resetState(true);
-  clearFile();
-  lockInputs(false);
-  showSection('input');
-  STAGES.forEach(s => setStage(s.id, 'wait'));
-  setProgress(0);
-  const li = document.getElementById('log-inner');
-  if (li) while (li.firstChild) li.removeChild(li.firstChild);
-}
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadApiKey();
 </script>
 </body>
 </html>
