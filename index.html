@@ -412,10 +412,14 @@
     </div>
   </div>
 
-  <!-- GENERATE -->
-  <button class="generate-btn" id="generateBtn" onclick="startGeneration()" disabled>
-    <span>⚡</span> Generate Student Notebooks
-  </button>
+  <!-- CONNECTION TEST -->
+  <div style="display:flex;gap:10px;align-items:center">
+    <button class="generate-btn" id="generateBtn" onclick="startGeneration()" disabled style="flex:1">
+      <span>⚡</span> Generate Student Notebooks
+    </button>
+    <button class="btn btn-secondary" id="testBtn" onclick="testConnection()" style="flex-shrink:0;padding:14px 18px;font-size:13px" disabled>🔌 Test API</button>
+  </div>
+  <div id="testResult" style="display:none;padding:10px 14px;border-radius:8px;font-size:12px;font-family:monospace"></div>
 
   <!-- PROGRESS -->
   <div class="card progress-card" id="progressCard">
@@ -595,6 +599,52 @@ function clearFile() {
 function updateGenerateBtn() {
   const btn = document.getElementById("generateBtn");
   btn.disabled = !(state.apiKey && state.fileData);
+  const testBtn = document.getElementById("testBtn");
+  if (testBtn) testBtn.disabled = !state.apiKey;
+}
+
+async function testConnection() {
+  const btn = document.getElementById("testBtn");
+  const result = document.getElementById("testResult");
+  btn.disabled = true;
+  btn.textContent = "Testing...";
+  result.style.display = "block";
+  result.style.background = "#21262d";
+  result.style.color = "#8b949e";
+  result.textContent = "Sending test request to Cloudflare AI Gateway...";
+
+  try {
+    const res = await fetch(GATEWAY_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": state.apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: 20,
+        messages: [{ role: "user", content: "Say OK" }]
+      })
+    });
+    const data = await res.json();
+    if (data.content) {
+      result.style.background = "rgba(63,185,80,0.1)";
+      result.style.color = "#3fb950";
+      result.textContent = "✓ Connected! Gateway is working. Response: " + (data.content[0]?.text || "OK");
+    } else {
+      result.style.background = "rgba(248,81,73,0.1)";
+      result.style.color = "#f85149";
+      result.textContent = "✗ API error: " + JSON.stringify(data).substring(0, 200);
+    }
+  } catch(e) {
+    result.style.background = "rgba(248,81,73,0.1)";
+    result.style.color = "#f85149";
+    result.textContent = "✗ " + e.message + " — Open F12 > Console for full CORS error details.";
+  }
+  btn.disabled = false;
+  btn.textContent = "🔌 Test API";
 }
 
 // ─── STAGES ───────────────────────────────────────────────────────────────────
@@ -649,23 +699,35 @@ async function callClaude(systemPrompt, userContent, label) {
     messages: [{ role: "user", content: userContent }]
   };
 
-  const res = await fetch(GATEWAY_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": state.apiKey,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true"
-    },
-    body: JSON.stringify(body)
-  });
+  const headers = {
+    "Content-Type": "application/json",
+    "x-api-key": state.apiKey,
+    "anthropic-version": "2023-06-01",
+    "anthropic-dangerous-direct-browser-access": "true"
+  };
+
+  let res;
+  try {
+    res = await fetch(GATEWAY_URL, { method: "POST", headers, body: JSON.stringify(body) });
+  } catch(fetchErr) {
+    log(`Fetch failed: ${fetchErr.message}. Trying Authorization header...`, "warn");
+    const h2 = { ...headers, "Authorization": `Bearer ${state.apiKey}` };
+    delete h2["x-api-key"];
+    try {
+      res = await fetch(GATEWAY_URL, { method: "POST", headers: h2, body: JSON.stringify(body) });
+    } catch(e2) {
+      throw new Error(`CORS/Network blocked. Open browser console (F12 > Console) and paste error here. Raw: ${e2.message}`);
+    }
+  }
 
   if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`API error ${res.status}: ${err.substring(0, 200)}`);
+    let errText = "";
+    try { errText = await res.text(); } catch(e) {}
+    throw new Error(`API ${res.status}: ${errText.substring(0, 300)}`);
   }
 
   const data = await res.json();
+  if (data.error) throw new Error(`Claude error: ${JSON.stringify(data.error)}`);
   const text = data.content.map(b => b.text || "").join("");
   log(`Claude response received (${text.length} chars)`, "success");
   return text;
