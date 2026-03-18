@@ -449,7 +449,7 @@
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const GATEWAY_URL = "https://gateway.ai.cloudflare.com/v1/c68f3337bff203b1bd7f2b92dbb9de44/claudenotebookengine/anthropic";
+const GATEWAY_URL = "https://gateway.ai.cloudflare.com/v1/c68f3337bff203b1bd7f2b92dbb9de44/claudenotebookengine/anthropic/v1/messages";
 const MODEL = "claude-sonnet-4-5";
 const MAX_TOKENS = 8000;
 
@@ -649,7 +649,7 @@ async function callClaude(systemPrompt, userContent, label) {
     messages: [{ role: "user", content: userContent }]
   };
 
-  const res = await fetch(`${GATEWAY_URL}/v1/messages`, {
+  const res = await fetch(GATEWAY_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
