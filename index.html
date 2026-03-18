@@ -432,6 +432,42 @@ function resetState(full = false) {
 // ══════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════
+// Safety net — if anything uncaught crashes, show error section instead of blank screen
+window.addEventListener('error', function(e) {
+  console.error('[LP Engine] Uncaught error:', e.error || e.message);
+  const es = document.getElementById('error-section');
+  const em = document.getElementById('err-msg');
+  const ed = document.getElementById('err-detail');
+  if (es && em) {
+    em.textContent = 'Unexpected error — see details below.';
+    if (ed) { ed.textContent = (e.error && e.error.stack) || e.message || 'Unknown error'; ed.classList.add('show'); }
+    es.style.display = '';
+    // Make sure at least one section is visible
+    const ps = document.getElementById('progress-section');
+    const is = document.getElementById('input-section');
+    if (ps && ps.style.display === 'none' && is && is.style.display === 'none') {
+      is.style.display = '';
+    }
+  }
+});
+
+window.addEventListener('unhandledrejection', function(e) {
+  console.error('[LP Engine] Unhandled promise rejection:', e.reason);
+  const es = document.getElementById('error-section');
+  const em = document.getElementById('err-msg');
+  const ed = document.getElementById('err-detail');
+  if (es && em) {
+    em.textContent = 'Unexpected error — see details below.';
+    if (ed) { ed.textContent = (e.reason && e.reason.stack) || String(e.reason) || 'Unknown rejection'; ed.classList.add('show'); }
+    es.style.display = '';
+    const ps = document.getElementById('progress-section');
+    const is = document.getElementById('input-section');
+    if (ps && ps.style.display === 'none' && is && is.style.display === 'none') {
+      is.style.display = '';
+    }
+  }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   // Set today's date
   const now = new Date();
@@ -1297,11 +1333,14 @@ async function handleGenerate() {
 
   resetState(true);
   lockInputs(true);
+
+  // Show progress FIRST before any async work — prevents blank screen on crash
+  showSection('progress');
+
   const li = document.getElementById('log-inner');
   while (li && li.firstChild) li.removeChild(li.firstChild);
   STAGES.forEach(s => setStage(s.id, 'wait'));
   setProgress(0);
-  showSection('progress');
 
   try {
     State.currentStage = 'extract';
